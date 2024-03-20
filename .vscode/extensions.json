@@ -1,0 +1,16 @@
+{
+  "recommendations": [
+    "tauri-apps.tauri-vscode",
+    "streetsidesoftware.code-spell-checker-arabic",
+    "streetsidesoftware.code-spell-checker",
+    "serayuzgur.crates",
+    "tamasfe.even-better-toml",
+    "visualstudioexptteam.vscodeintellicode",
+    "yzhang.markdown-all-in-one",
+    "idered.npm",
+    "christian-kohler.npm-intellisense",
+    "christian-kohler.path-intellisense",
+    "esbenp.prettier-vscode",
+    "gruntfuggly.todo-tree"
+  ]
+}

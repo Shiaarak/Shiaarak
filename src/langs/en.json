@@ -1,0 +1,37 @@
+{
+  "menus": {
+    "about": "About",
+    "app": "Application",
+    "website": "Website",
+    "s-code": "Source Code",
+    "author": "Author",
+    "links-p": "Links Page",
+    "settings": "Settings",
+    "import": "Import file",
+    "export": "Export image",
+    "lang": "Language",
+    "file": "File",
+    "save": "Save",
+    "sel-lang": "Select Language...",
+    "no-found": "Nothing found..."
+  },
+  "tabs": {
+    "c": "Canvas",
+    "i": "Icon",
+    "t": "Text"
+  },
+  "sel": {
+    "color": {
+      "transparent": "Transparent",
+      "rbga": "RBGA = $1 $2 $3 $4%"
+    },
+    "size": {
+      "res": "Resolution",
+      "dir": "Direction",
+      "l": "Landscape",
+      "p": "Portrait",
+      "p-m": "Pixel Multiplier",
+      "size": "Size = $1x$2 px"
+    }
+  }
+}

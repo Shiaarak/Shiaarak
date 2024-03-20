@@ -1,0 +1,30 @@
+{
+  "caseSensitive": true,
+  "useGitignore": true,
+  "language": "en-US,ar",
+  "files": ["./src/**/*", "*.md"],
+  "words": [
+    "add-ons",
+    "Alsaiad",
+    "iarna",
+    "ltr",
+    "mah",
+    "mantine",
+    "mul",
+    "Nabil",
+    "rbga",
+    "rtl",
+    "sel",
+    "Sel",
+    "shiaarak",
+    "Shiaarak",
+    "tabler",
+    "tauri",
+    "الإستخدام",
+    "البكسل",
+    "بإشتراك",
+    "تحتاجها",
+    "قرائته",
+    "لإستخدام"
+  ]
+}
