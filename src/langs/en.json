@@ -22,18 +22,17 @@
   },
   "sel": {
     "color": {
-      "legend": "Color",
-      "transparent": "Transparent",
-      "rbga": "RBGA = $1 $2 $3 $4%"
+      "legend": "Color = ",
+      "rbga": "$1 $2 $3 $4%",
+      "transparent": "Transparent"
     },
     "size": {
-      "legend": "Size",
+      "legend": "Size = $1x$2 px",
       "res": "Resolution",
       "dir": "Direction",
       "l": "Landscape",
       "p": "Portrait",
-      "p-m": "Pixel Multiplier",
-      "size": "Size = $1x$2 px"
+      "p-m": "Pixel Multiplier"
     }
   }
 }

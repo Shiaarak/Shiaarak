@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import { Text, Space, Fieldset, SegmentedControl, Center, Slider, Button } from '@mantine/core'
-import { iconProps, textProps, theme, translate } from '../../settings'
+import { LangContext, iconProps, textProps, theme, translate } from '../../settings'
 import { IconCropLandscape, IconCropPortrait } from '@tabler/icons-react'
 
 export interface SizeSelProps extends SizeSelVarProps, SizeSelCallbackProps {}
@@ -24,6 +24,8 @@ export interface SizeSelCallbackProps {
 export type SizeValue = { w: number; h: number }
 
 export default function SizeSel({ size, onChange }: SizeSelProps) {
+  const lang = useContext(LangContext)
+
   const [res, setRes] = useState<`${number}x${number}`>('1x1')
   const [dir, setDir] = useState<'l' | 'p'>('l')
   const [mul, setMul] = useState<number>(500)
@@ -37,7 +39,17 @@ export default function SizeSel({ size, onChange }: SizeSelProps) {
   }, [res, dir, mul])
 
   return (
-    <Fieldset legend={translate('sel.size.legend')}>
+    <Fieldset
+      legend={translate('sel.size.legend', [
+        [1, size.w],
+        [2, size.h]
+      ])}
+      styles={{
+        legend: {
+          direction: lang.dir
+        }
+      }}
+    >
       <Text {...textProps}>{translate('sel.size.res')}</Text>
       <Space h="xs" />
       <Button.Group
@@ -116,16 +128,7 @@ export default function SizeSel({ size, onChange }: SizeSelProps) {
         {translate('sel.size.p-m')} ({mul})
       </Text>
       <Space h="xs" />
-      <Slider value={mul} onChange={setMul} min={1} max={1000} />
-
-      <Space h="sm" />
-
-      <Text {...textProps}>
-        {translate('sel.size.size', [
-          [1, size.w],
-          [2, size.h]
-        ])}
-      </Text>
+      <Slider value={mul} onChange={setMul} min={1} max={1000} label={null} />
     </Fieldset>
   )
 }
