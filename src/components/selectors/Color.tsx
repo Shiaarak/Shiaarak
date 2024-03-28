@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from 'react'
-import { ColorPicker, AlphaSlider, Fieldset } from '@mantine/core'
-import { LangContext, translate } from '../../settings'
+import { ColorPicker, AlphaSlider, Fieldset, Text, Space } from '@mantine/core'
+import { LangContext, textProps, translate } from '../../settings'
 
 export interface ColorSelProps extends ColorSelVarProps, ColorSelCallbackProps {}
 
@@ -60,10 +60,17 @@ export default function ColorSel({ colors: choices = ['#000000'], onChange }: Co
         }
       }}
     >
+      <Text {...textProps}>{translate('sel.color.transparency')}</Text>
+      <Space h="xs" />
       <AlphaSlider color={color} value={opacity} onChange={setOpacity} />
 
       {opacity > 0 && (
-        <ColorPicker fullWidth format="hex" value={color} withPicker={false} onChange={setColor} swatches={choices} />
+        <>
+          <Space h="sm" />
+
+          <Text {...textProps}>{translate('sel.color.color')}</Text>
+          <ColorPicker fullWidth format="hex" value={color} withPicker={false} onChange={setColor} swatches={choices} />
+        </>
       )}
     </Fieldset>
   )

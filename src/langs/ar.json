@@ -23,8 +23,10 @@
   "sel": {
     "color": {
       "legend": "اللون = ",
+      "color": "اللون",
       "rbga": "$1 $2 $3 $4%",
-      "transparent": "شفاف"
+      "transparent": "شفاف",
+      "transparency": "الشفافية"
     },
     "size": {
       "legend": "الحجم = $1x$2 بكسل",

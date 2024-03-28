@@ -23,8 +23,10 @@
   "sel": {
     "color": {
       "legend": "Color = ",
+      "color": "Color",
       "rbga": "$1 $2 $3 $4%",
-      "transparent": "Transparent"
+      "transparent": "Transparent",
+      "transparency": "Transparency"
     },
     "size": {
       "legend": "Size = $1x$2 px",
