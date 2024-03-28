@@ -40,7 +40,9 @@
       "legend": "Scale = $1%",
       "layer": "Layer",
       "pad": "Padding",
-      "i-l": "Icon Layers"
+      "i-l": "Icon Layers",
+      "c-all": "Close All",
+      "o-all": "Open All"
     }
   }
 }

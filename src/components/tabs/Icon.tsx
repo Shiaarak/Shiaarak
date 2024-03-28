@@ -1,23 +1,44 @@
 import { useContext, useEffect, useState } from 'react'
-import { Stack, Accordion, Space, ScrollArea, Divider, Slider, Text, Fieldset } from '@mantine/core'
+import { Stack, Accordion, Space, ScrollArea, Divider, Slider, Text, Fieldset, Button } from '@mantine/core'
 import ColorSel, { ColorSelVarProps, ColorValue } from '../selectors/Color'
 import { SizeValue } from '../selectors/Size'
 import { LangContext, textProps, translate } from '../../settings'
 
 export interface IconTabProps {
-  layersProps: Omit<IconLayerProps, 'i' | 'padding'>[]
+  layersProps: Omit<IconLayerProps, 'i' | 'padding' | 'onClick'>[]
 }
 
 export default function IconTab({ layersProps }: IconTabProps) {
   const lang = useContext(LangContext)
 
   const [padding, setPadding] = useState<number>(10)
+  const [openItems, setOpenItems] = useState(layersProps.map((_, i) => i.toString()))
 
   const { size } = layersProps[0]
   const aspect = Math.min(size.w, size.h)
   const maxPadding = aspect * 0.5
 
   const scale = ((aspect - padding * 2) / aspect).toFixed(2)
+
+  function controlItems(itemI?: string) {
+    if (itemI) {
+      setOpenItems((prev) => {
+        const index = prev.indexOf(itemI)
+        if (index === -1) {
+          return [...prev, itemI]
+        }
+
+        return prev.filter((_, i) => i !== index)
+      })
+      return
+    }
+
+    if (openItems.length === 0) {
+      setOpenItems(layersProps.map((_, i) => i.toString()))
+    } else {
+      setOpenItems([])
+    }
+  }
 
   return (
     <Stack justify="flex-start" gap="xs">
@@ -40,10 +61,14 @@ export default function IconTab({ layersProps }: IconTabProps) {
 
       <Divider my="xs" label={`🔻 ${translate('sel.icon.i-l')} 🔻`} labelPosition="center" />
 
-      <Accordion multiple variant="separated" defaultValue={layersProps.map((_, i) => i.toString())}>
+      <Button fullWidth onClick={() => controlItems()}>
+        {translate(`sel.icon.${openItems.length === 0 ? 'o' : 'c'}-all`)}
+      </Button>
+
+      <Accordion multiple variant="separated" value={openItems}>
         <ScrollArea.Autosize mah={520} mx="auto" type="never">
           {layersProps.map((layerProps, i) => (
-            <IconLayer key={i} i={i} {...layerProps} padding={padding} />
+            <IconLayer key={i} i={i} {...layerProps} padding={padding} onClick={controlItems} />
           ))}
         </ScrollArea.Autosize>
       </Accordion>
@@ -76,9 +101,14 @@ interface IconLayerProps extends ColorSelVarProps {
    *
    */
   padding: number
+
+  /**
+   *
+   */
+  onClick: (itemI: string) => void
 }
 
-function IconLayer({ i, path, colors, elRef: ref, size, padding }: IconLayerProps) {
+function IconLayer({ i, path, colors, elRef: ref, size, padding, onClick }: IconLayerProps) {
   const [color, setColor] = useState<ColorValue>('#ffffffff')
 
   useEffect(() => {
@@ -135,7 +165,7 @@ function IconLayer({ i, path, colors, elRef: ref, size, padding }: IconLayerProp
 
   return (
     <Accordion.Item key={i} value={i.toString()}>
-      <Accordion.Control>
+      <Accordion.Control onClick={() => onClick(i.toString())}>
         {translate('sel.icon.layer')} {i}
       </Accordion.Control>
       <Accordion.Panel>
