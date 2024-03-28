@@ -37,7 +37,7 @@ export default function SizeSel({ size, onChange }: SizeSelProps) {
   }, [res, dir, mul])
 
   return (
-    <Fieldset legend="Size">
+    <Fieldset legend={translate('sel.size.legend')}>
       <Text {...textProps}>{translate('sel.size.res')}</Text>
       <Space h="xs" />
       <Button.Group

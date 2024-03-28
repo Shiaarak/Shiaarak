@@ -22,10 +22,12 @@
   },
   "sel": {
     "color": {
+      "legend": "Color",
       "transparent": "Transparent",
       "rbga": "RBGA = $1 $2 $3 $4%"
     },
     "size": {
+      "legend": "Size",
       "res": "Resolution",
       "dir": "Direction",
       "l": "Landscape",

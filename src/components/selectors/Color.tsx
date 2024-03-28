@@ -40,7 +40,7 @@ export default function ColorSel({ colors: choices = ['#000000'], onChange }: Co
   }, [color, opacity])
 
   return (
-    <Fieldset legend="Color">
+    <Fieldset legend={translate('sel.color.legend')}>
       <AlphaSlider color={color} value={opacity} onChange={setOpacity} />
 
       {opacity > 0 && (
