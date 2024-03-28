@@ -6,10 +6,15 @@ import SizeSel, { SizeSelVarProps, SizeValue } from '../selectors/Size'
 const squareSize = 10
 
 export interface CanvasTabProps extends SizeSelVarProps, ColorSelVarProps {
-  useRef: React.MutableRefObject<HTMLCanvasElement | null>
+  /**
+   * Reference to the canvas used to draw the background
+   */
+  elRef: React.MutableRefObject<HTMLCanvasElement | null>
+
+  onSizeChange: (size: SizeValue) => void
 }
 
-export default function CanvasTab({ useRef: ref, colors }: CanvasTabProps) {
+export default function CanvasTab({ elRef: ref, colors, onSizeChange }: CanvasTabProps) {
   const [color, setColor] = useState<ColorValue>('#ffffffff')
   const [size, setSize] = useState<SizeValue>({ w: 1000, h: 1000 })
 
@@ -46,6 +51,8 @@ export default function CanvasTab({ useRef: ref, colors }: CanvasTabProps) {
       ctx.fillStyle = pattern
       ctx.fillRect(0, 0, canvas.width, canvas.height)
     }
+
+    onSizeChange(size)
   }, [color, size, ref])
 
   return (

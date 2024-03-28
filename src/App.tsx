@@ -1,11 +1,21 @@
 import { useEffect, useReducer, useRef, useState } from 'react'
 import { Container, AppShell, Tabs, Center } from '@mantine/core'
 import CanvasTab from './components/tabs/Canvas'
+import IconTab from './components/tabs/Icon'
 import Menus from './components/Menus'
 import { Lang, LangContext, flattenJson, langs, textProps, translate } from './settings'
+import { SizeValue } from './components/selectors/Size'
 
 export default function App() {
   const bgRef = useRef<HTMLCanvasElement>(null)
+  const iconRefs = [
+    useRef<HTMLCanvasElement>(null),
+    useRef<HTMLCanvasElement>(null),
+    useRef<HTMLCanvasElement>(null),
+    useRef<HTMLCanvasElement>(null)
+  ]
+
+  const [size, setSize] = useState<SizeValue>({ w: 1000, h: 1000 })
   const [lang, setLang] = useState<Lang>(langs.ar)
   const [_, forceUpdate] = useReducer((x) => x + 1, 0)
 
@@ -24,6 +34,14 @@ export default function App() {
     }
   }, [lang])
 
+  const colors = ['#ffffff', '#000000', '#ed2e38', '#009639']
+  const iconLayers = iconRefs.map((_, i) => ({
+    size,
+    colors,
+    elRef: iconRefs[i],
+    path: `${i}.png`
+  }))
+
   return (
     <LangContext.Provider value={lang}>
       <AppShell
@@ -37,10 +55,11 @@ export default function App() {
         </AppShell.Header>
         <AppShell.Main>
           <Container fluid bg="#242424">
-            <Center>
+            <Center style={{ position: 'relative', justifyContent: 'center', alignItems: 'center' }}>
               <canvas ref={bgRef} />
-              {/* <img src="logo0.png" style={{ position: 'absolute' }} />
-            <img src="logo1.png" style={{ position: 'absolute' }} /> */}
+              {iconRefs.map((_, i) => (
+                <canvas key={i} ref={iconRefs[i]} style={{ position: 'absolute' }} />
+              ))}
             </Center>
           </Container>
         </AppShell.Main>
@@ -53,13 +72,14 @@ export default function App() {
             </Tabs.List>
             <Tabs.Panel value="c">
               <CanvasTab
-                useRef={bgRef}
+                onSizeChange={setSize}
+                elRef={bgRef}
                 size={{ w: 1000, h: 1000 }}
                 colors={['#ffffff', '#000000', '#ff0000', '#00ff00', '#0000ff']}
               />
             </Tabs.Panel>
-            {/* <Tabs.Panel value="i">{<ImagesTab />}</Tabs.Panel>
-          <Tabs.Panel value="t">{<TextTab />}</Tabs.Panel> */}
+            <Tabs.Panel value="i">{<IconTab layersProps={iconLayers} />}</Tabs.Panel>
+            {/* <Tabs.Panel value="t">{<TextTab />}</Tabs.Panel> */}
           </Tabs>
         </AppShell.Aside>
       </AppShell>

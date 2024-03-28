@@ -2,10 +2,14 @@
   "caseSensitive": true,
   "useGitignore": true,
   "language": "en-US,ar",
-  "files": ["./src/**/*", "*.md"],
+  "files": [
+    "./src/**/*",
+    "*.md"
+  ],
   "words": [
     "add-ons",
     "Alsaiad",
+    "Autosize",
     "iarna",
     "ltr",
     "mah",
