@@ -22,9 +22,9 @@ export interface ColorSelCallbackProps {
 
 export type ColorValue = string | CanvasGradient | CanvasPattern | null
 
-export default function ColorSel({ colors: choices = ['#000000'], onChange }: ColorSelProps) {
-  const [opacity, setOpacity] = useState<number>(1)
-  const [color, setColor] = useState<string>('#ffffff')
+export default function ColorSel({ colors: choices, onChange }: ColorSelProps) {
+  const [opacity, setOpacity] = useState<number>(choices.length > 0 ? 1 : 0)
+  const [color, setColor] = useState<string>(choices[0] || '#ffffff')
 
   useEffect(() => {
     if (opacity === 0) {
@@ -53,16 +53,27 @@ export default function ColorSel({ colors: choices = ['#000000'], onChange }: Co
             ]))
       }
     >
-      <Text {...textProps}>{translate('sel.color.transparency')}</Text>
-      <Space h="xs" />
-      <AlphaSlider color={color} value={opacity} onChange={setOpacity} />
-
-      {opacity > 0 && (
+      {choices.length > 0 && (
         <>
-          <Space h="sm" />
+          <Text {...textProps}>{translate('sel.color.transparency')}</Text>
+          <Space h="xs" />
+          <AlphaSlider color={color} value={opacity} onChange={setOpacity} />
 
-          <Text {...textProps}>{translate('sel.color.color')}</Text>
-          <ColorPicker fullWidth format="hex" value={color} withPicker={false} onChange={setColor} swatches={choices} />
+          {opacity > 0 && (
+            <>
+              <Space h="sm" />
+
+              <Text {...textProps}>{translate('sel.color.color')}</Text>
+              <ColorPicker
+                fullWidth
+                format="hex"
+                value={color}
+                withPicker={false}
+                onChange={setColor}
+                swatches={choices}
+              />
+            </>
+          )}
         </>
       )}
     </Fieldset>
