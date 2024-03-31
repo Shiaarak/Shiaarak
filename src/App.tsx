@@ -50,7 +50,7 @@ export default function App() {
         header={{ height: 30, offset: true }}
         padding="md"
       >
-        <AppShell.Header>
+        <AppShell.Header dir={lang.dir} pr={10} pl={10}>
           <Menus onLangChange={(code) => setLang(langs[code])} />
         </AppShell.Header>
         <AppShell.Main>

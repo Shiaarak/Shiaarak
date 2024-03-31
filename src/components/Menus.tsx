@@ -16,8 +16,26 @@ export default function Menus({ onLangChange }: MenusProps) {
 
   const [opened, { open, close }] = useDisclosure(false)
 
-  const menuProps: MenuProps = { withArrow: true, arrowPosition: 'center', shadow: 'md', width: 200 }
-  const buttonProps: ButtonProps = { variant: 'transparent', size: 'compact-xs' }
+  const menuProps: MenuProps = {
+    withArrow: true,
+    arrowPosition: 'center',
+    shadow: 'md',
+    width: 200,
+    styles: {
+      arrow: { direction: lang.dir },
+      divider: { direction: lang.dir },
+      dropdown: { direction: lang.dir },
+      item: { direction: lang.dir },
+      itemLabel: { direction: lang.dir },
+      itemSection: { direction: lang.dir },
+      label: { direction: lang.dir }
+    }
+  }
+  const buttonProps: ButtonProps = {
+    variant: 'transparent',
+    size: 'compact-xs',
+    style: { direction: lang.dir }
+  }
   const linkMenuItemProps: PolymorphicComponentProps<'a', MenuItemProps> = {
     rightSection: <IconExternalLink {...iconProps} />,
     component: 'a',
