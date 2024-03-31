@@ -1,16 +1,14 @@
-import { useContext, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Stack, Accordion, Space, ScrollArea, Divider, Slider, Text, Fieldset, Button } from '@mantine/core'
 import ColorSel, { ColorSelVarProps, ColorValue } from '../selectors/Color'
 import { SizeValue } from '../selectors/Size'
-import { LangContext, textProps, translate } from '../../settings'
+import { textProps, translate } from '../../settings'
 
 export interface IconTabProps {
   layersProps: Omit<IconLayerProps, 'i' | 'padding' | 'onClick'>[]
 }
 
 export default function IconTab({ layersProps }: IconTabProps) {
-  const lang = useContext(LangContext)
-
   const [padding, setPadding] = useState<number>(10)
   const [openItems, setOpenItems] = useState(layersProps.map((_, i) => i.toString()))
 
@@ -44,14 +42,7 @@ export default function IconTab({ layersProps }: IconTabProps) {
     <Stack justify="flex-start" gap="xs">
       <Space h="xs" />
 
-      <Fieldset
-        legend={translate('sel.icon.legend', [[1, scale]])}
-        styles={{
-          legend: {
-            direction: lang.dir
-          }
-        }}
-      >
+      <Fieldset legend={translate('sel.icon.legend', [[1, scale]])}>
         <Text {...textProps}>
           {translate('sel.icon.pad')} ({padding})
         </Text>

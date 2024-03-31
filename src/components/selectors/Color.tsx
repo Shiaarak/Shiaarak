@@ -1,6 +1,6 @@
-import { useContext, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { ColorPicker, AlphaSlider, Fieldset, Text, Space } from '@mantine/core'
-import { LangContext, textProps, translate } from '../../settings'
+import { textProps, translate } from '../../settings'
 
 export interface ColorSelProps extends ColorSelVarProps, ColorSelCallbackProps {}
 
@@ -23,8 +23,6 @@ export interface ColorSelCallbackProps {
 export type ColorValue = string | CanvasGradient | CanvasPattern | null
 
 export default function ColorSel({ colors: choices = ['#000000'], onChange }: ColorSelProps) {
-  const lang = useContext(LangContext)
-
   const [opacity, setOpacity] = useState<number>(1)
   const [color, setColor] = useState<string>('#ffffff')
 
@@ -54,11 +52,6 @@ export default function ColorSel({ colors: choices = ['#000000'], onChange }: Co
               [4, Math.round(opacity * 100)]
             ]))
       }
-      styles={{
-        legend: {
-          direction: lang.dir
-        }
-      }}
     >
       <Text {...textProps}>{translate('sel.color.transparency')}</Text>
       <Space h="xs" />

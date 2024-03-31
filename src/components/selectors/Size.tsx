@@ -1,6 +1,6 @@
-import { useContext, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Text, Space, Fieldset, SegmentedControl, Center, Slider, Button } from '@mantine/core'
-import { LangContext, iconProps, textProps, theme, translate } from '../../settings'
+import { iconProps, textProps, theme, translate } from '../../settings'
 import { IconCropLandscape, IconCropPortrait } from '@tabler/icons-react'
 
 export interface SizeSelProps extends SizeSelVarProps, SizeSelCallbackProps {}
@@ -24,8 +24,6 @@ export interface SizeSelCallbackProps {
 export type SizeValue = { w: number; h: number }
 
 export default function SizeSel({ size, onChange }: SizeSelProps) {
-  const lang = useContext(LangContext)
-
   const [res, setRes] = useState<`${number}x${number}`>('1x1')
   const [dir, setDir] = useState<'l' | 'p'>('l')
   const [mul, setMul] = useState<number>(500)
@@ -44,11 +42,6 @@ export default function SizeSel({ size, onChange }: SizeSelProps) {
         [1, size.w],
         [2, size.h]
       ])}
-      styles={{
-        legend: {
-          direction: lang.dir
-        }
-      }}
     >
       <Text {...textProps}>{translate('sel.size.res')}</Text>
       <Space h="xs" />

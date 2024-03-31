@@ -1,5 +1,5 @@
 import type { Direction, TextProps } from '@mantine/core'
-import { createTheme } from '@mantine/core'
+import { Fieldset, createTheme } from '@mantine/core'
 import { createContext } from 'react'
 
 export type LangCode = 'ar' | 'en'
@@ -60,7 +60,17 @@ export const theme = createTheme({
   primaryColor: 'blue',
   primaryShade: 7,
   black: '#000',
-  white: '#fff'
+  white: '#fff',
+
+  components: {
+    Fieldset: Fieldset.extend({
+      styles: {
+        legend: {
+          direction: langs[document.documentElement.lang as LangCode].dir
+        }
+      }
+    })
+  }
 })
 
 export let iconProps = { size: 14 }
