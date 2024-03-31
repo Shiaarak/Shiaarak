@@ -80,6 +80,8 @@ export default function SizeSel({ size, onChange }: SizeSelProps) {
         })}
       </Button.Group>
 
+      {res !== '1x1' && (
+        <>
       <Space h="sm" />
 
       <Text {...textProps}>{translate('sel.size.dir')}</Text>
@@ -113,7 +115,9 @@ export default function SizeSel({ size, onChange }: SizeSelProps) {
             )
           }
         ]}
-      />
+          />
+        </>
+      )}
 
       <Space h="sm" />
 
