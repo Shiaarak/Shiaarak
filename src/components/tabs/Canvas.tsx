@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Stack, Space } from '@mantine/core'
 import ColorSel, { Color, ColorSelProps } from '../selectors/Color'
-import SizeSel, { SizeSelProps, Size } from '../selectors/Size'
+import ResSel, { ResSelProps, Res } from '../selectors/Res'
 
 const squareSize = 10
 
@@ -11,17 +11,17 @@ export interface CanvasTabProps {
    */
   elRef: React.MutableRefObject<HTMLCanvasElement | null>
 
-  size: Pick<SizeSelProps, 'choices' | 'onChange'>
+  res: Pick<ResSelProps, 'choices' | 'onChange'>
   color: Pick<ColorSelProps, 'choices'>
 }
 
 export default function CanvasTab({
   elRef: ref,
   color: { choices: colors },
-  size: { choices: sizes, onChange: onSizeChange }
+  res: { choices: resArr, onChange: onResChange }
 }: CanvasTabProps) {
   const [color, setColor] = useState<Color | null>('#ffffffff')
-  const [size, setSize] = useState<Size>({ w: 1000, h: 1000 })
+  const [res, setRes] = useState<Res>({ w: 1000, h: 1000 })
 
   useEffect(() => {
     const canvas = ref.current
@@ -31,8 +31,8 @@ export default function CanvasTab({
     if (!ctx) return
 
     if (color) {
-      canvas.width = size.w
-      canvas.height = size.h
+      canvas.width = res.w
+      canvas.height = res.h
 
       ctx.fillStyle = color as Color
       ctx.fillRect(0, 0, canvas.width, canvas.height)
@@ -50,21 +50,21 @@ export default function CanvasTab({
       const pattern = ctx.createPattern(canvas, 'repeat')
       if (!pattern) return
 
-      canvas.width = size.w
-      canvas.height = size.h
+      canvas.width = res.w
+      canvas.height = res.h
 
       ctx.fillStyle = pattern
       ctx.fillRect(0, 0, canvas.width, canvas.height)
     }
 
-    onSizeChange(size)
-  }, [color, size, ref, onSizeChange])
+    onResChange(res)
+  }, [color, res, ref, onResChange])
 
   return (
     <Stack justify="flex-start" gap="xs">
       <Space h="xs" />
 
-      <SizeSel value={size} choices={sizes} onChange={setSize} />
+      <ResSel value={res} choices={resArr} onChange={setRes} />
 
       <ColorSel choices={colors} onChange={setColor} />
     </Stack>

@@ -3,59 +3,60 @@ import { Text, Space, Fieldset, SegmentedControl, Center, Slider, Button } from 
 import { iconProps, textProps, theme, translate } from '../../settings'
 import { IconCropLandscape, IconCropPortrait } from '@tabler/icons-react'
 
-export interface SizeSelProps {
+export interface ResSelProps {
   /**
-   * The current size value
+   * The current resolution value
    * @defaultValue [{ w: 1000, h: 1000 }]
    */
-  value: Size
+  value: Res
+
   /**
    * The color options to choose from
    * @defaultValue ['1x1']
    */
-  choices: Res[]
+  choices: AspectRatio[]
 
   /**
    * To be called when data changes
    * @callback
    */
-  onChange: (value: Size) => void
+  onChange: (value: Res) => void
 }
 
-export type Size = { w: number; h: number }
-export type Res = {
-  /** Bigger side of resolution */
+export type Res = { w: number; h: number }
+export type AspectRatio = {
+  /** Bigger side of aspect ratio */
   b: number
 
-  /** smaller side of resolution */
+  /** smaller side of aspect ratio */
   s: number
 
   /**
-   * Direction of resolution
+   * Direction of aspect ratio
    *
-   * Undefined only when the resolution is square
+   * Undefined only when the aspect ratio is square
    */
   dir?: {
     l?: boolean
     p?: boolean
   }
 }
-export type ResDir = 'l' | 'p'
+export type AspectRatioDir = 'l' | 'p'
 
-export default function SizeSel({ value, choices, onChange }: SizeSelProps) {
-  const [res, setRes] = useState<Res>(choices[0] || '1x1')
-  const [dir, setDir] = useState<ResDir>(res.dir?.p ? 'p' : 'l')
+export default function ResSel({ value, choices, onChange }: ResSelProps) {
+  const [ratio, setRatio] = useState<AspectRatio>(choices[0] || '1x1')
+  const [dir, setDir] = useState<AspectRatioDir>(ratio.dir?.p ? 'p' : 'l')
   const [mul, setMul] = useState<number>(500)
 
   useEffect(() => {
-    const w = (dir === 'l' ? res.b : res.s) * mul
-    const h = (dir === 'p' ? res.b : res.s) * mul
+    const w = (dir === 'l' ? ratio.b : ratio.s) * mul
+    const h = (dir === 'p' ? ratio.b : ratio.s) * mul
 
     onChange({ w, h })
-  }, [res, dir, mul])
+  }, [ratio, dir, mul])
 
-  function handleResChange(r: Res) {
-    setRes(r)
+  function handleRatioChange(r: AspectRatio) {
+    setRatio(r)
 
     if (r.dir) {
       const { l, p } = r.dir
@@ -69,12 +70,12 @@ export default function SizeSel({ value, choices, onChange }: SizeSelProps) {
 
   return (
     <Fieldset
-      legend={translate('sel.size.legend', [
+      legend={translate('sel.res.legend', [
         [1, value.w],
         [2, value.h]
       ])}
     >
-      <Text {...textProps}>{translate('sel.size.res')}</Text>
+      <Text {...textProps}>{translate('sel.res.ratio')}</Text>
       <Space h="xs" />
       <Button.Group
         className="m-4081bf90 mantine-Group-root"
@@ -92,10 +93,10 @@ export default function SizeSel({ value, choices, onChange }: SizeSelProps) {
           return (
             <Button
               key={i}
-              variant={JSON.stringify(res) == JSON.stringify(r) ? 'filled' : 'default'}
+              variant={JSON.stringify(ratio) == JSON.stringify(r) ? 'filled' : 'default'}
               size="compact-xs"
               radius="sm"
-              onClick={() => handleResChange(r)}
+              onClick={() => handleRatioChange(r)}
               className="mantine-focus-auto m-5e1a038c m-de3d2490 mantine-ColorSwatch-root"
               styles={{
                 root: {
@@ -110,11 +111,11 @@ export default function SizeSel({ value, choices, onChange }: SizeSelProps) {
         })}
       </Button.Group>
 
-      {res.dir && (
+      {ratio.dir && (
         <>
           <Space h="sm" />
 
-          <Text {...textProps}>{translate('sel.size.dir')}</Text>
+          <Text {...textProps}>{translate('sel.res.dir')}</Text>
           <Space h="xs" />
           <SegmentedControl
             fullWidth
@@ -122,26 +123,26 @@ export default function SizeSel({ value, choices, onChange }: SizeSelProps) {
             variant="filled"
             color={theme.primaryColor}
             value={dir}
-            onChange={(val) => setDir(val as ResDir)}
+            onChange={(val) => setDir(val as AspectRatioDir)}
             defaultValue="l"
             data={[
               {
                 value: 'l',
-                disabled: !res.dir?.l,
+                disabled: !ratio.dir?.l,
                 label: (
                   <Center style={{ gap: 5 }}>
                     <IconCropLandscape {...iconProps} />
-                    <Text {...textProps}>{translate('sel.size.l')}</Text>
+                    <Text {...textProps}>{translate('sel.res.l')}</Text>
                   </Center>
                 )
               },
               {
                 value: 'p',
-                disabled: !res.dir?.p,
+                disabled: !ratio.dir?.p,
                 label: (
                   <Center style={{ gap: 5 }}>
                     <IconCropPortrait {...iconProps} />
-                    <Text {...textProps}>{translate('sel.size.p')}</Text>
+                    <Text {...textProps}>{translate('sel.res.p')}</Text>
                   </Center>
                 )
               }
@@ -153,7 +154,7 @@ export default function SizeSel({ value, choices, onChange }: SizeSelProps) {
       <Space h="sm" />
 
       <Text {...textProps}>
-        {translate('sel.size.p-m')} ({mul})
+        {translate('sel.res.p-m')} ({mul})
       </Text>
       <Space h="xs" />
       <Slider value={mul} onChange={setMul} min={1} max={1000} label={null} />

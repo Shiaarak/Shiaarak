@@ -28,9 +28,9 @@
       "transparent": "Transparent",
       "transparency": "Transparency"
     },
-    "size": {
-      "legend": "Size = $1x$2 px",
-      "res": "Resolution",
+    "res": {
+      "legend": "Resolution = $1x$2 px",
+      "ratio": "Aspect Ratio",
       "dir": "Direction",
       "l": "Landscape",
       "p": "Portrait",

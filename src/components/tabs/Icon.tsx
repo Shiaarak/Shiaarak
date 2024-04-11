@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Stack, Accordion, Space, ScrollArea, Divider, Slider, Text, Fieldset, Button } from '@mantine/core'
-import { SizeSelProps } from '../selectors/Size'
+import { ResSelProps } from '../selectors/Res'
 import { textProps, translate } from '../../settings'
 import ColorSel, { ColorSelProps, Color } from '../selectors/Color'
 
@@ -13,9 +13,9 @@ export default function IconTab({ layersProps }: IconTabProps) {
   const [openItems, setOpenItems] = useState<string[]>(layersProps.map((_, i) => i.toString()))
 
   const {
-    size: { value: size }
+    res: { value: res }
   } = layersProps[0]
-  const aspect = Math.min(size.w, size.h)
+  const aspect = Math.min(res.w, res.h)
   const maxPadding = aspect * 0.5
 
   const scale = ((aspect - padding * 2) / aspect).toFixed(2)
@@ -89,7 +89,7 @@ export interface IconLayerProps {
 
   onClick: (itemI: string) => void
 
-  size: Pick<SizeSelProps, 'value'>
+  res: Pick<ResSelProps, 'value'>
 
   color: Pick<ColorSelProps, 'choices'>
 }
@@ -99,7 +99,7 @@ function IconLayer({
   path,
   color: { choices: colors },
   elRef: ref,
-  size: { value: size },
+  res: { value: res },
   padding,
   onClick
 }: IconLayerProps) {
@@ -116,7 +116,7 @@ function IconLayer({
       return
     }
 
-    const { w, h } = size
+    const { w, h } = res
     canvas.width = w
     canvas.height = h
 
@@ -153,7 +153,7 @@ function IconLayer({
 
       ctx.putImageData(imageData, 0, 0)
     }
-  }, [ref, color, path, size, padding])
+  }, [ref, color, path, res, padding])
 
   return (
     <Accordion.Item key={i} value={i.toString()}>

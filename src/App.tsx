@@ -5,14 +5,14 @@ import CanvasTab from './components/tabs/Canvas'
 import IconTab from './components/tabs/Icon'
 import Menus from './components/Menus'
 import { type Lang, LangContext, setTranslation, langs, textProps, translate } from './settings'
-import { type Size } from './components/selectors/Size'
+import { type Res } from './components/selectors/Res'
 import { type Color } from './components/selectors/Color'
 
 export default function App() {
   const bgRef = useRef<HTMLCanvasElement>(null)
   const iconRefs = Array.from({ length: 4 }, (_, i) => i).map(() => useRef<HTMLCanvasElement>(null))
 
-  const [size, setSize] = useState<Size>({ w: 1000, h: 1000 })
+  const [res, setRes] = useState<Res>({ w: 1000, h: 1000 })
   const [lang, setLang] = useLocalStorage<Lang>({
     key: 'settings.lang',
     defaultValue: langs.ar
@@ -36,7 +36,7 @@ export default function App() {
 
   const colors: Color[] = ['#ffffff', '#000000', '#ed2e38', '#009639']
   const iconLayers = iconRefs.map((_, i) => ({
-    size: { value: size },
+    res: { value: res },
     color: { choices: colors },
     elRef: iconRefs[i],
     path: `${i}.png`
@@ -73,7 +73,7 @@ export default function App() {
             <Tabs.Panel value="c">
               <CanvasTab
                 elRef={bgRef}
-                size={{
+                res={{
                   choices: [
                     {
                       b: 1,
@@ -102,7 +102,7 @@ export default function App() {
                       }
                     }
                   ],
-                  onChange: setSize
+                  onChange: setRes
                 }}
                 color={{ choices: ['#ffffff', '#000000', '#ff0000', '#00ff00', '#0000ff'] }}
               />
