@@ -1,22 +1,18 @@
 import { useEffect, useRef, useState } from 'react'
 import { Container, AppShell, Tabs, Center } from '@mantine/core'
+import { useForceUpdate, useLocalStorage } from '@mantine/hooks'
 import CanvasTab from './components/tabs/Canvas'
 import IconTab from './components/tabs/Icon'
 import Menus from './components/Menus'
-import { Lang, LangContext, setTranslation, langs, textProps, translate } from './settings'
-import { SizeValue } from './components/selectors/Size'
-import { useForceUpdate, useLocalStorage } from '@mantine/hooks'
+import { type Lang, LangContext, setTranslation, langs, textProps, translate } from './settings'
+import { type Size } from './components/selectors/Size'
+import { type Color } from './components/selectors/Color'
 
 export default function App() {
   const bgRef = useRef<HTMLCanvasElement>(null)
-  const iconRefs = [
-    useRef<HTMLCanvasElement>(null),
-    useRef<HTMLCanvasElement>(null),
-    useRef<HTMLCanvasElement>(null),
-    useRef<HTMLCanvasElement>(null)
-  ]
+  const iconRefs = Array.from({ length: 4 }, (_, i) => i).map(() => useRef<HTMLCanvasElement>(null))
 
-  const [size, setSize] = useState<SizeValue>({ w: 1000, h: 1000 })
+  const [size, setSize] = useState<Size>({ w: 1000, h: 1000 })
   const [lang, setLang] = useLocalStorage<Lang>({
     key: 'settings.lang',
     defaultValue: langs.ar
@@ -38,10 +34,10 @@ export default function App() {
     }
   }, [lang])
 
-  const colors = ['#ffffff', '#000000', '#ed2e38', '#009639']
+  const colors: Color[] = ['#ffffff', '#000000', '#ed2e38', '#009639']
   const iconLayers = iconRefs.map((_, i) => ({
-    size,
-    colors,
+    size: { value: size },
+    color: { choices: colors },
     elRef: iconRefs[i],
     path: `${i}.png`
   }))
@@ -76,10 +72,39 @@ export default function App() {
             </Tabs.List>
             <Tabs.Panel value="c">
               <CanvasTab
-                onSizeChange={setSize}
                 elRef={bgRef}
-                size={{ w: 1000, h: 1000 }}
-                colors={['#ffffff', '#000000', '#ff0000', '#00ff00', '#0000ff']}
+                size={{
+                  choices: [
+                    {
+                      b: 1,
+                      s: 1
+                    },
+                    {
+                      b: 3,
+                      s: 2,
+                      dir: {
+                        l: true
+                      }
+                    },
+                    {
+                      b: 4,
+                      s: 3,
+                      dir: {
+                        p: true
+                      }
+                    },
+                    {
+                      b: 16,
+                      s: 9,
+                      dir: {
+                        l: true,
+                        p: true
+                      }
+                    }
+                  ],
+                  onChange: setSize
+                }}
+                color={{ choices: ['#ffffff', '#000000', '#ff0000', '#00ff00', '#0000ff'] }}
               />
             </Tabs.Panel>
             <Tabs.Panel value="i">{<IconTab layersProps={iconLayers} />}</Tabs.Panel>

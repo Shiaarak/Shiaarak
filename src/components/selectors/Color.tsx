@@ -2,29 +2,28 @@ import { useEffect, useState } from 'react'
 import { ColorPicker, AlphaSlider, Fieldset, Text, Space } from '@mantine/core'
 import { textProps, translate } from '../../settings'
 
-export interface ColorSelProps extends ColorSelVarProps, ColorSelCallbackProps {}
-
-export interface ColorSelVarProps {
+export interface ColorSelProps {
   /**
    * The color options to choose from
    * @defaultValue ['#ffffff']
    */
-  colors: string[]
-}
+  choices: Color[]
 
-export interface ColorSelCallbackProps {
   /**
    * To be called when data changes
    * @callback
    */
-  onChange: (value: ColorValue) => void
+  onChange: (value: Color | null) => void
 }
 
-export type ColorValue = string | CanvasGradient | CanvasPattern | null
+export type Color =
+  | `#${string}`
+  | `rgb(${number},${number},${number})`
+  | `rgba(${number},${number},${number},${number})`
 
-export default function ColorSel({ colors: choices, onChange }: ColorSelProps) {
+export default function ColorSel({ choices, onChange }: ColorSelProps) {
   const [opacity, setOpacity] = useState<number>(choices.length > 0 ? 1 : 0)
-  const [color, setColor] = useState<string>(choices[0] || '#ffffff')
+  const [color, setColor] = useState<Color>(choices[0] || '#ffffff')
 
   useEffect(() => {
     if (opacity === 0) {
@@ -36,7 +35,7 @@ export default function ColorSel({ colors: choices, onChange }: ColorSelProps) {
       .toString(16)
       .padStart(2, '0')
 
-    onChange(color + opacityHex)
+    onChange((color + opacityHex) as Color)
   }, [color, opacity])
 
   return (
@@ -69,7 +68,7 @@ export default function ColorSel({ colors: choices, onChange }: ColorSelProps) {
                 format="hex"
                 value={color}
                 withPicker={false}
-                onChange={setColor}
+                onChange={(val) => setColor(val as Color)}
                 swatches={choices}
               />
             </>

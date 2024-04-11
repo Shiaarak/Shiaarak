@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react'
 import { Stack, Accordion, Space, ScrollArea, Divider, Slider, Text, Fieldset, Button } from '@mantine/core'
-import ColorSel, { ColorSelVarProps, ColorValue } from '../selectors/Color'
-import { SizeValue } from '../selectors/Size'
+import { SizeSelProps } from '../selectors/Size'
 import { textProps, translate } from '../../settings'
+import ColorSel, { ColorSelProps, Color } from '../selectors/Color'
 
 export interface IconTabProps {
   layersProps: Omit<IconLayerProps, 'i' | 'padding' | 'onClick'>[]
@@ -12,7 +12,9 @@ export default function IconTab({ layersProps }: IconTabProps) {
   const [padding, setPadding] = useState<number>(10)
   const [openItems, setOpenItems] = useState<string[]>(layersProps.map((_, i) => i.toString()))
 
-  const { size } = layersProps[0]
+  const {
+    size: { value: size }
+  } = layersProps[0]
   const aspect = Math.min(size.w, size.h)
   const maxPadding = aspect * 0.5
 
@@ -67,16 +69,11 @@ export default function IconTab({ layersProps }: IconTabProps) {
   )
 }
 
-interface IconLayerProps extends ColorSelVarProps {
+export interface IconLayerProps {
   /**
    * Layer Index
    */
   i: number
-
-  /**
-   * Layer image path
-   */
-  path: string
 
   /**
    * Reference to the canvas used to draw the layer
@@ -84,23 +81,29 @@ interface IconLayerProps extends ColorSelVarProps {
   elRef: React.MutableRefObject<HTMLCanvasElement | null>
 
   /**
-   *
+   * Layer image path
    */
-  size: SizeValue
+  path: string
 
-  /**
-   *
-   */
   padding: number
 
-  /**
-   *
-   */
   onClick: (itemI: string) => void
+
+  size: Pick<SizeSelProps, 'value'>
+
+  color: Pick<ColorSelProps, 'choices'>
 }
 
-function IconLayer({ i, path, colors, elRef: ref, size, padding, onClick }: IconLayerProps) {
-  const [color, setColor] = useState<ColorValue>('#ffffffff')
+function IconLayer({
+  i,
+  path,
+  color: { choices: colors },
+  elRef: ref,
+  size: { value: size },
+  padding,
+  onClick
+}: IconLayerProps) {
+  const [color, setColor] = useState<Color | null>('#ffffffff')
 
   useEffect(() => {
     const canvas = ref.current
@@ -158,7 +161,7 @@ function IconLayer({ i, path, colors, elRef: ref, size, padding, onClick }: Icon
         {translate('sel.icon.layer')} {i}
       </Accordion.Control>
       <Accordion.Panel>
-        <ColorSel colors={colors} onChange={setColor} />
+        <ColorSel choices={colors} onChange={setColor} />
       </Accordion.Panel>
     </Accordion.Item>
   )

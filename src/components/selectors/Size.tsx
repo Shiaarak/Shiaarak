@@ -3,48 +3,75 @@ import { Text, Space, Fieldset, SegmentedControl, Center, Slider, Button } from 
 import { iconProps, textProps, theme, translate } from '../../settings'
 import { IconCropLandscape, IconCropPortrait } from '@tabler/icons-react'
 
-export interface SizeSelProps extends SizeSelVarProps, SizeSelCallbackProps {}
-
-export interface SizeSelVarProps {
+export interface SizeSelProps {
   /**
    * The current size value
    * @defaultValue [{ w: 1000, h: 1000 }]
    */
-  size: SizeValue
-}
+  value: Size
+  /**
+   * The color options to choose from
+   * @defaultValue ['1x1']
+   */
+  choices: Res[]
 
-export interface SizeSelCallbackProps {
   /**
    * To be called when data changes
    * @callback
    */
-  onChange: (value: SizeValue) => void
+  onChange: (value: Size) => void
 }
 
-export type SizeValue = { w: number; h: number }
-export type Res = `${number}x${number}`
+export type Size = { w: number; h: number }
+export type Res = {
+  /** Bigger side of resolution */
+  b: number
+
+  /** smaller side of resolution */
+  s: number
+
+  /**
+   * Direction of resolution
+   *
+   * Undefined only when the resolution is square
+   */
+  dir?: {
+    l?: boolean
+    p?: boolean
+  }
+}
 export type ResDir = 'l' | 'p'
 
-export default function SizeSel({ size, onChange }: SizeSelProps) {
-  const [res, setRes] = useState<Res>('1x1')
-  const [dir, setDir] = useState<ResDir>('l')
+export default function SizeSel({ value, choices, onChange }: SizeSelProps) {
+  const [res, setRes] = useState<Res>(choices[0] || '1x1')
+  const [dir, setDir] = useState<ResDir>(res.dir?.p ? 'p' : 'l')
   const [mul, setMul] = useState<number>(500)
 
   useEffect(() => {
-    const parts = res.split('x')
-    const w = parseInt(parts[dir === 'l' ? 0 : 1]) * mul
-    const h = parseInt(parts[dir === 'p' ? 0 : 1]) * mul
+    const w = (dir === 'l' ? res.b : res.s) * mul
+    const h = (dir === 'p' ? res.b : res.s) * mul
 
     onChange({ w, h })
   }, [res, dir, mul])
 
-  const resArr: Res[] = ['1x1', '3x2', '4x3', '5x4', '7x5', '16x9']
+  function handleResChange(r: Res) {
+    setRes(r)
+
+    if (r.dir) {
+      const { l, p } = r.dir
+      if (dir === 'l' && !l) {
+        setDir('p')
+      } else if (dir === 'p' && !p) {
+        setDir('l')
+      }
+    }
+  }
 
   return (
     <Fieldset
       legend={translate('sel.size.legend', [
-        [1, size.w],
-        [2, size.h]
+        [1, value.w],
+        [2, value.h]
       ])}
     >
       <Text {...textProps}>{translate('sel.size.res')}</Text>
@@ -61,14 +88,14 @@ export default function SizeSel({ size, onChange }: SizeSelProps) {
           }
         }}
       >
-        {resArr.map((r, i) => {
+        {choices.map((r, i) => {
           return (
             <Button
               key={i}
-              variant={res === r ? 'filled' : 'default'}
+              variant={JSON.stringify(res) == JSON.stringify(r) ? 'filled' : 'default'}
               size="compact-xs"
               radius="sm"
-              onClick={() => setRes(r)}
+              onClick={() => handleResChange(r)}
               className="mantine-focus-auto m-5e1a038c m-de3d2490 mantine-ColorSwatch-root"
               styles={{
                 root: {
@@ -77,13 +104,13 @@ export default function SizeSel({ size, onChange }: SizeSelProps) {
                 }
               }}
             >
-              {r}
+              {`${r.b}x${r.s}`}
             </Button>
           )
         })}
       </Button.Group>
 
-      {res !== '1x1' && (
+      {res.dir && (
         <>
           <Space h="sm" />
 
@@ -95,12 +122,12 @@ export default function SizeSel({ size, onChange }: SizeSelProps) {
             variant="filled"
             color={theme.primaryColor}
             value={dir}
-            // @ts-expect-error
-            onChange={setDir}
+            onChange={(val) => setDir(val as ResDir)}
             defaultValue="l"
             data={[
               {
                 value: 'l',
+                disabled: !res.dir?.l,
                 label: (
                   <Center style={{ gap: 5 }}>
                     <IconCropLandscape {...iconProps} />
@@ -110,6 +137,7 @@ export default function SizeSel({ size, onChange }: SizeSelProps) {
               },
               {
                 value: 'p',
+                disabled: !res.dir?.p,
                 label: (
                   <Center style={{ gap: 5 }}>
                     <IconCropPortrait {...iconProps} />
