@@ -10,7 +10,7 @@ export interface IconTabProps {
 
 export default function IconTab({ layersProps }: IconTabProps) {
   const [padding, setPadding] = useState<number>(10)
-  const [openItems, setOpenItems] = useState(layersProps.map((_, i) => i.toString()))
+  const [openItems, setOpenItems] = useState<string[]>(layersProps.map((_, i) => i.toString()))
 
   const { size } = layersProps[0]
   const aspect = Math.min(size.w, size.h)
@@ -125,8 +125,6 @@ function IconLayer({ i, path, colors, elRef: ref, size, padding, onClick }: Icon
 
       const wRatio = (w - 2 * padding) / iw
       const hRatio = (h - 2 * padding) / ih
-      // const wRatio = w / iw
-      // const hRatio = h / ih
       const ratio = Math.min(wRatio, hRatio)
 
       const xCenterShift = (w - iw * ratio) * 0.5

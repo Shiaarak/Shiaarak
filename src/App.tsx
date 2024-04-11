@@ -1,10 +1,11 @@
-import { useEffect, useReducer, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Container, AppShell, Tabs, Center } from '@mantine/core'
 import CanvasTab from './components/tabs/Canvas'
 import IconTab from './components/tabs/Icon'
 import Menus from './components/Menus'
-import { Lang, LangContext, flattenJson, langs, textProps, translate } from './settings'
+import { Lang, LangContext, setTranslation, langs, textProps, translate } from './settings'
 import { SizeValue } from './components/selectors/Size'
+import { useForceUpdate, useLocalStorage } from '@mantine/hooks'
 
 export default function App() {
   const bgRef = useRef<HTMLCanvasElement>(null)
@@ -16,12 +17,15 @@ export default function App() {
   ]
 
   const [size, setSize] = useState<SizeValue>({ w: 1000, h: 1000 })
-  const [lang, setLang] = useState<Lang>(langs.ar)
-  const [_, forceUpdate] = useReducer((x) => x + 1, 0)
+  const [lang, setLang] = useLocalStorage<Lang>({
+    key: 'settings.lang',
+    defaultValue: langs.ar
+  })
+  const forceUpdate = useForceUpdate()
 
   useEffect(() => {
-    import(`./langs/${lang.code}.json`).then(({ default: obj }) => {
-      flattenJson(obj, null)
+    import(`./langs/${lang.code}.json`).then(({ default: obj }: { default: object }) => {
+      setTranslation(lang, obj)
       forceUpdate()
     })
 
@@ -51,7 +55,7 @@ export default function App() {
         padding="md"
       >
         <AppShell.Header dir={lang.dir} pr={10} pl={10}>
-          <Menus onLangChange={(code) => setLang(langs[code])} />
+          <Menus onLangChange={setLang} />
         </AppShell.Header>
         <AppShell.Main>
           <Container fluid bg="#242424">

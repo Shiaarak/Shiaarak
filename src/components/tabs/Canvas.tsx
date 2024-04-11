@@ -53,7 +53,7 @@ export default function CanvasTab({ elRef: ref, colors, onSizeChange }: CanvasTa
     }
 
     onSizeChange(size)
-  }, [color, size, ref])
+  }, [color, size, ref, onSizeChange])
 
   return (
     <Stack justify="flex-start" gap="xs">

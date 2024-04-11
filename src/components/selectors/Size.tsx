@@ -22,10 +22,12 @@ export interface SizeSelCallbackProps {
 }
 
 export type SizeValue = { w: number; h: number }
+export type Res = `${number}x${number}`
+export type ResDir = 'l' | 'p'
 
 export default function SizeSel({ size, onChange }: SizeSelProps) {
-  const [res, setRes] = useState<`${number}x${number}`>('1x1')
-  const [dir, setDir] = useState<'l' | 'p'>('l')
+  const [res, setRes] = useState<Res>('1x1')
+  const [dir, setDir] = useState<ResDir>('l')
   const [mul, setMul] = useState<number>(500)
 
   useEffect(() => {
@@ -35,6 +37,8 @@ export default function SizeSel({ size, onChange }: SizeSelProps) {
 
     onChange({ w, h })
   }, [res, dir, mul])
+
+  const resArr: Res[] = ['1x1', '3x2', '4x3', '5x4', '7x5', '16x9']
 
   return (
     <Fieldset
@@ -57,14 +61,13 @@ export default function SizeSel({ size, onChange }: SizeSelProps) {
           }
         }}
       >
-        {['1x1', '3x2', '4x3', '5x4', '7x5', '16x9'].map((r, i) => {
+        {resArr.map((r, i) => {
           return (
             <Button
               key={i}
               variant={res === r ? 'filled' : 'default'}
               size="compact-xs"
               radius="sm"
-              // @ts-expect-error
               onClick={() => setRes(r)}
               className="mantine-focus-auto m-5e1a038c m-de3d2490 mantine-ColorSwatch-root"
               styles={{
@@ -82,39 +85,39 @@ export default function SizeSel({ size, onChange }: SizeSelProps) {
 
       {res !== '1x1' && (
         <>
-      <Space h="sm" />
+          <Space h="sm" />
 
-      <Text {...textProps}>{translate('sel.size.dir')}</Text>
-      <Space h="xs" />
-      <SegmentedControl
-        fullWidth
-        defaultChecked
-        variant="filled"
-        color={theme.primaryColor}
-        value={dir}
-        // @ts-expect-error
-        onChange={setDir}
-        defaultValue="l"
-        data={[
-          {
-            value: 'l',
-            label: (
-              <Center style={{ gap: 5 }}>
-                <IconCropLandscape {...iconProps} />
-                <Text {...textProps}>{translate('sel.size.l')}</Text>
-              </Center>
-            )
-          },
-          {
-            value: 'p',
-            label: (
-              <Center style={{ gap: 5 }}>
-                <IconCropPortrait {...iconProps} />
-                <Text {...textProps}>{translate('sel.size.p')}</Text>
-              </Center>
-            )
-          }
-        ]}
+          <Text {...textProps}>{translate('sel.size.dir')}</Text>
+          <Space h="xs" />
+          <SegmentedControl
+            fullWidth
+            defaultChecked
+            variant="filled"
+            color={theme.primaryColor}
+            value={dir}
+            // @ts-expect-error
+            onChange={setDir}
+            defaultValue="l"
+            data={[
+              {
+                value: 'l',
+                label: (
+                  <Center style={{ gap: 5 }}>
+                    <IconCropLandscape {...iconProps} />
+                    <Text {...textProps}>{translate('sel.size.l')}</Text>
+                  </Center>
+                )
+              },
+              {
+                value: 'p',
+                label: (
+                  <Center style={{ gap: 5 }}>
+                    <IconCropPortrait {...iconProps} />
+                    <Text {...textProps}>{translate('sel.size.p')}</Text>
+                  </Center>
+                )
+              }
+            ]}
           />
         </>
       )}

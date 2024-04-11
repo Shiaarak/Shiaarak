@@ -2,12 +2,12 @@ import type { MenuProps, ButtonProps, MenuItemProps, PolymorphicComponentProps }
 
 import { Button, Group, Menu, Modal, Select, Space, Text } from '@mantine/core'
 import { IconExternalLink, IconFile, IconInfoCircle, IconLanguage, IconSettings } from '@tabler/icons-react'
-import { iconProps, translate, textProps, LangCode, isLangName, LangContext, langs } from '../settings'
+import { iconProps, translate, textProps, type Lang, isLangName, LangContext, langs } from '../settings'
 import { useDisclosure } from '@mantine/hooks'
 import { useContext, useRef } from 'react'
 
 export interface MenusProps {
-  onLangChange: (lang: LangCode) => void
+  onLangChange: (lang: Lang) => void
 }
 
 export default function Menus({ onLangChange }: MenusProps) {
@@ -54,10 +54,10 @@ export default function Menus({ onLangChange }: MenusProps) {
       return
     }
 
-    // @ts-expect-error
-    const newLang = Object.values(langs).find((l) => l.name === langSelRef.current.value)?.code
-    // @ts-expect-error
-    onLangChange(newLang)
+    const newLang = Object.values(langs).find((l) => l.name === langSelRef.current?.value)
+    if (newLang) {
+      onLangChange(newLang)
+    }
     close()
   }
 
@@ -72,11 +72,9 @@ export default function Menus({ onLangChange }: MenusProps) {
 
         <Menu.Dropdown>
           <Menu.Label>{translate('menus.app')}</Menu.Label>
-          {/* @ts-expect-error */}
           <Menu.Item href="https://shiaarak.io" {...linkMenuItemProps}>
             {translate('menus.website')}
           </Menu.Item>
-          {/* @ts-expect-error */}
           <Menu.Item href="https://github.com/Shiaarak/shiaarak" {...linkMenuItemProps}>
             {translate('menus.s-code')}
           </Menu.Item>
@@ -84,7 +82,6 @@ export default function Menus({ onLangChange }: MenusProps) {
           <Menu.Divider />
 
           <Menu.Label>{translate('menus.author')}</Menu.Label>
-          {/* @ts-expect-error */}
           <Menu.Item href="https://links.nabilalsaiad.com" {...linkMenuItemProps}>
             {translate('menus.links-p')}
           </Menu.Item>

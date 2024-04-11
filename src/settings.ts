@@ -2,6 +2,8 @@ import type { Direction, TextProps } from '@mantine/core'
 import { Fieldset, createTheme } from '@mantine/core'
 import { createContext } from 'react'
 
+// language
+
 export type LangCode = 'ar' | 'en'
 export type LangName = 'العربية' | 'English'
 export interface Lang {
@@ -26,6 +28,8 @@ export function isLangName(name: string): name is LangName {
 
 export const LangContext = createContext<Lang>(langs.ar)
 
+// translation
+
 const translation = new Map<string, string>()
 
 export function translate(key: string, replacements?: [number, string | number][]): string {
@@ -42,7 +46,22 @@ export function translate(key: string, replacements?: [number, string | number][
   return val
 }
 
-export function flattenJson(obj: object, parentKey: string | null) {
+export function setTranslation(lang: Lang, obj: object) {
+  if (lang.code === translation.get('lang')) return
+
+  translation.set('lang', lang.code)
+  flattenJson(obj)
+
+  document.documentElement.lang = lang.code
+  if (!textProps.style) {
+    textProps.style = { direction: lang.dir }
+    if (!textProps.style.direction) {
+      textProps.style.direction = lang.dir
+    }
+  }
+}
+
+export function flattenJson(obj: object, parentKey?: string) {
   for (const key in obj) {
     // @ts-expect-error
     const el: object | string = obj[key]
@@ -55,6 +74,8 @@ export function flattenJson(obj: object, parentKey: string | null) {
     }
   }
 }
+
+// theme
 
 export const theme = createTheme({
   primaryColor: 'blue',
@@ -72,6 +93,8 @@ export const theme = createTheme({
     })
   }
 })
+
+// props overrides
 
 export let iconProps = { size: 14 }
 export let textProps: TextProps = {
