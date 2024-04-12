@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { ColorPicker, AlphaSlider, Fieldset, Text, Space } from '@mantine/core'
 import { textProps, translate } from '../../settings'
+import { type Color } from '../../logo'
 
 export interface ColorSelProps {
   /**
@@ -15,11 +16,6 @@ export interface ColorSelProps {
    */
   onChange: (value: Color | null) => void
 }
-
-export type Color =
-  | `#${string}`
-  | `rgb(${number},${number},${number})`
-  | `rgba(${number},${number},${number},${number})`
 
 export default function ColorSel({ choices, onChange }: ColorSelProps) {
   const [opacity, setOpacity] = useState<number>(choices.length > 0 ? 1 : 0)

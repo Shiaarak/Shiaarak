@@ -5,8 +5,7 @@ import CanvasTab from './components/tabs/Canvas'
 import IconTab from './components/tabs/Icon'
 import Menus from './components/Menus'
 import { type Lang, LangContext, setTranslation, langs, textProps, translate } from './settings'
-import { type Res } from './components/selectors/Res'
-import { type Color } from './components/selectors/Color'
+import { type Res, type Color } from './logo'
 
 export default function App() {
   const bgRef = useRef<HTMLCanvasElement>(null)
@@ -36,10 +35,9 @@ export default function App() {
 
   const colors: Color[] = ['#ffffff', '#000000', '#ed2e38', '#009639']
   const iconLayers = iconRefs.map((_, i) => ({
-    res: { value: res },
-    color: { choices: colors },
     elRef: iconRefs[i],
-    path: `${i}.png`
+    path: `${i}.png`,
+    colors
   }))
 
   return (
@@ -73,8 +71,9 @@ export default function App() {
             <Tabs.Panel value="c">
               <CanvasTab
                 elRef={bgRef}
-                res={{
-                  choices: [
+                colors={['#ffffff', '#000000', '#ff0000', '#00ff00', '#0000ff']}
+                onResChange={setRes}
+                ratios={[
                     {
                       b: 1,
                       s: 1
@@ -101,13 +100,10 @@ export default function App() {
                         p: true
                       }
                     }
-                  ],
-                  onChange: setRes
-                }}
-                color={{ choices: ['#ffffff', '#000000', '#ff0000', '#00ff00', '#0000ff'] }}
+                ]}
               />
             </Tabs.Panel>
-            <Tabs.Panel value="i">{<IconTab layersProps={iconLayers} />}</Tabs.Panel>
+            <Tabs.Panel value="i">{<IconTab res={res} layersProps={iconLayers} />}</Tabs.Panel>
             {/* <Tabs.Panel value="t">{<TextTab />}</Tabs.Panel> */}
           </Tabs>
         </AppShell.Aside>

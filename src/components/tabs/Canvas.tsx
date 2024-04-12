@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react'
 import { Stack, Space } from '@mantine/core'
-import ColorSel, { Color, ColorSelProps } from '../selectors/Color'
-import ResSel, { ResSelProps, Res } from '../selectors/Res'
+import ColorSel from '../selectors/Color'
+import ResSel from '../selectors/Res'
+import { type Color, type Res, type AspectRatio } from '../../logo'
 
 const squareSize = 10
 
@@ -9,17 +10,16 @@ export interface CanvasTabProps {
   /**
    * Reference to the canvas used to draw the background
    */
-  elRef: React.MutableRefObject<HTMLCanvasElement | null>
+  elRef: React.RefObject<HTMLCanvasElement | null>
 
-  res: Pick<ResSelProps, 'choices' | 'onChange'>
-  color: Pick<ColorSelProps, 'choices'>
+  colors: Color[]
+
+  ratios: AspectRatio[]
+
+  onResChange: (value: Res) => void
 }
 
-export default function CanvasTab({
-  elRef: ref,
-  color: { choices: colors },
-  res: { choices: resArr, onChange: onResChange }
-}: CanvasTabProps) {
+export default function CanvasTab({ elRef: ref, colors, ratios, onResChange }: CanvasTabProps) {
   const [color, setColor] = useState<Color | null>('#ffffffff')
   const [res, setRes] = useState<Res>({ w: 1000, h: 1000 })
 
@@ -64,7 +64,7 @@ export default function CanvasTab({
     <Stack justify="flex-start" gap="xs">
       <Space h="xs" />
 
-      <ResSel value={res} choices={resArr} onChange={setRes} />
+      <ResSel value={res} choices={ratios} onChange={setRes} />
 
       <ColorSel choices={colors} onChange={setColor} />
     </Stack>

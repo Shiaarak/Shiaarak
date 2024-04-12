@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Text, Space, Fieldset, SegmentedControl, Center, Slider, Button } from '@mantine/core'
 import { iconProps, textProps, theme, translate } from '../../settings'
 import { IconCropLandscape, IconCropPortrait } from '@tabler/icons-react'
+import { type Res, type AspectRatio, type AspectRatioDir } from '../../logo'
 
 export interface ResSelProps {
   /**
@@ -23,28 +24,8 @@ export interface ResSelProps {
   onChange: (value: Res) => void
 }
 
-export type Res = { w: number; h: number }
-export type AspectRatio = {
-  /** Bigger side of aspect ratio */
-  b: number
-
-  /** smaller side of aspect ratio */
-  s: number
-
-  /**
-   * Direction of aspect ratio
-   *
-   * Undefined only when the aspect ratio is square
-   */
-  dir?: {
-    l?: boolean
-    p?: boolean
-  }
-}
-export type AspectRatioDir = 'l' | 'p'
-
 export default function ResSel({ value, choices, onChange }: ResSelProps) {
-  const [ratio, setRatio] = useState<AspectRatio>(choices[0] || '1x1')
+  const [ratio, setRatio] = useState<AspectRatio>(choices[0] || { b: 1, s: 1 })
   const [dir, setDir] = useState<AspectRatioDir>(ratio.dir?.p ? 'p' : 'l')
   const [mul, setMul] = useState<number>(500)
 

@@ -1,20 +1,19 @@
 import { useEffect, useState } from 'react'
 import { Stack, Accordion, Space, ScrollArea, Divider, Slider, Text, Fieldset, Button } from '@mantine/core'
-import { ResSelProps } from '../selectors/Res'
 import { textProps, translate } from '../../settings'
-import ColorSel, { ColorSelProps, Color } from '../selectors/Color'
+import ColorSel from '../selectors/Color'
+import { type Color, type Res } from '../../logo'
 
 export interface IconTabProps {
-  layersProps: Omit<IconLayerProps, 'i' | 'padding' | 'onClick'>[]
+  res: Res
+
+  layersProps: Pick<IconLayerProps, 'elRef' | 'path' | 'colors'>[]
 }
 
-export default function IconTab({ layersProps }: IconTabProps) {
+export default function IconTab({ res, layersProps }: IconTabProps) {
   const [padding, setPadding] = useState<number>(10)
   const [openItems, setOpenItems] = useState<string[]>(layersProps.map((_, i) => i.toString()))
 
-  const {
-    res: { value: res }
-  } = layersProps[0]
   const aspect = Math.min(res.w, res.h)
   const maxPadding = aspect * 0.5
 
@@ -61,7 +60,7 @@ export default function IconTab({ layersProps }: IconTabProps) {
       <Accordion multiple variant="separated" value={openItems}>
         <ScrollArea.Autosize mah={520} mx="auto" type="never">
           {layersProps.map((layerProps, i) => (
-            <IconLayer key={i} i={i} {...layerProps} padding={padding} onClick={controlItems} />
+            <IconLayer key={i} i={i} {...layerProps} res={res} padding={padding} onClick={controlItems} />
           ))}
         </ScrollArea.Autosize>
       </Accordion>
@@ -78,7 +77,7 @@ export interface IconLayerProps {
   /**
    * Reference to the canvas used to draw the layer
    */
-  elRef: React.MutableRefObject<HTMLCanvasElement | null>
+  elRef: React.RefObject<HTMLCanvasElement | null>
 
   /**
    * Layer image path
@@ -89,20 +88,12 @@ export interface IconLayerProps {
 
   onClick: (itemI: string) => void
 
-  res: Pick<ResSelProps, 'value'>
+  res: Res
 
-  color: Pick<ColorSelProps, 'choices'>
+  colors: Color[]
 }
 
-function IconLayer({
-  i,
-  path,
-  color: { choices: colors },
-  elRef: ref,
-  res: { value: res },
-  padding,
-  onClick
-}: IconLayerProps) {
+function IconLayer({ i, path, colors, elRef: ref, res, padding, onClick }: IconLayerProps) {
   const [color, setColor] = useState<Color | null>('#ffffffff')
 
   useEffect(() => {
