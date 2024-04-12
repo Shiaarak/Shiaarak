@@ -22,6 +22,14 @@ export default function ColorSel({ choices, onChange }: ColorSelProps) {
   const [color, setColor] = useState<Color>(choices[0] || '#ffffff')
 
   useEffect(() => {
+    if (choices.length === 0) {
+      setOpacity(0)
+    } else {
+      choices = choices.map((c) => (c.length > 7 ? (c.substring(0, 7) as Color) : c))
+    }
+  }, [choices])
+
+  useEffect(() => {
     if (opacity === 0) {
       onChange(null)
       return
