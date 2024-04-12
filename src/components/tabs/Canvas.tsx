@@ -1,8 +1,8 @@
-import { useEffect, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import { Stack, Space } from '@mantine/core'
 import ColorSel from '../selectors/Color'
 import ResSel from '../selectors/Res'
-import { type Color, type Res, type AspectRatio } from '../../logo'
+import { LogoContext, type LogoCanvas, type Color, type Res } from '../../logo'
 
 const squareSize = 10
 
@@ -12,16 +12,34 @@ export interface CanvasTabProps {
    */
   elRef: React.RefObject<HTMLCanvasElement | null>
 
-  colors: Color[]
-
-  ratios: AspectRatio[]
-
+  /**
+   * To be called when the resolution changes
+   */
   onResChange: (value: Res) => void
 }
 
-export default function CanvasTab({ elRef: ref, colors, ratios, onResChange }: CanvasTabProps) {
-  const [color, setColor] = useState<Color | null>('#ffffffff')
-  const [res, setRes] = useState<Res>({ w: 1000, h: 1000 })
+export default function CanvasTab({ elRef: ref, onResChange }: CanvasTabProps) {
+  const { canvas } = useContext(LogoContext) || { canvas: { colors: ['#ffffff'], ratios: [{ b: 1, s: 1 }] } }
+  const { colors, ratios }: LogoCanvas = canvas
+
+  const [color, setColor] = useState<Color | null>(((colors[0] + 'ff') as Color) || null)
+  const [res, setRes] = useState<Res>({
+    w: (ratios[0]?.dir?.p ? ratios[0].s : ratios[0].b) * 500,
+    h: (ratios[0]?.dir?.p ? ratios[0].b : ratios[0].s) * 500
+  })
+
+  useEffect(() => {
+    if (colors.length > 0 && colors[0] !== color?.substring(0, 5)) {
+      setColor((colors[0] + 'ff') as Color)
+    }
+
+    if (ratios.length > 0 && (ratios[0].b !== res.w || ratios[0].s !== res.h)) {
+      setRes({
+        w: (ratios[0].dir?.p ? ratios[0].s : ratios[0].b) * 500,
+        h: (ratios[0].dir?.p ? ratios[0].b : ratios[0].s) * 500
+      })
+    }
+  }, [canvas])
 
   useEffect(() => {
     const canvas = ref.current
@@ -64,9 +82,9 @@ export default function CanvasTab({ elRef: ref, colors, ratios, onResChange }: C
     <Stack justify="flex-start" gap="xs">
       <Space h="xs" />
 
-      <ResSel value={res} choices={ratios} onChange={setRes} />
+      <ResSel value={res} choices={canvas.ratios || []} onChange={setRes} />
 
-      <ColorSel choices={colors} onChange={setColor} />
+      <ColorSel choices={canvas.colors || []} onChange={setColor} />
     </Stack>
   )
 }

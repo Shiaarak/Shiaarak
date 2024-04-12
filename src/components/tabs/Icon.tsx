@@ -1,23 +1,32 @@
-import { useEffect, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import { Stack, Accordion, Space, ScrollArea, Divider, Slider, Text, Fieldset, Button } from '@mantine/core'
 import { textProps, translate } from '../../settings'
 import ColorSel from '../selectors/Color'
-import { type Color, type Res } from '../../logo'
+import { LogoContext, type LogoIcon, type Color, type Res } from '../../logo'
 
 export interface IconTabProps {
-  res: Res
+  /**
+   * Reference to the canvas used to draw the layer
+   */
+  holderRef: React.RefObject<HTMLDivElement>
 
-  layersProps: Pick<IconLayerProps, 'elRef' | 'path' | 'colors'>[]
+  res: Res
 }
 
-export default function IconTab({ res, layersProps }: IconTabProps) {
-  const [padding, setPadding] = useState<number>(10)
-  const [openItems, setOpenItems] = useState<string[]>(layersProps.map((_, i) => i.toString()))
+export default function IconTab({ holderRef, res }: IconTabProps) {
+  const { icon } = useContext(LogoContext) || { icon: { padding: 0.1, layers: [] } }
+  const { padding: p, layers }: LogoIcon = icon
 
   const aspect = Math.min(res.w, res.h)
   const maxPadding = aspect * 0.5
 
-  const scale = ((aspect - padding * 2) / aspect).toFixed(2)
+  const [padding, setPadding] = useState<number>(maxPadding * p)
+  const [openItems, setOpenItems] = useState<string[]>(layers.map((_, i) => i.toString()))
+
+  useEffect(() => {
+    if (p === padding / maxPadding) return
+    setPadding(maxPadding * p)
+  }, [res, p])
 
   function controlItems(itemI?: string) {
     if (itemI) {
@@ -33,7 +42,7 @@ export default function IconTab({ res, layersProps }: IconTabProps) {
     }
 
     if (openItems.length === 0) {
-      setOpenItems(layersProps.map((_, i) => i.toString()))
+      setOpenItems(layers.map((_, i) => i.toString()))
     } else {
       setOpenItems([])
     }
@@ -43,7 +52,7 @@ export default function IconTab({ res, layersProps }: IconTabProps) {
     <Stack justify="flex-start" gap="xs">
       <Space h="xs" />
 
-      <Fieldset legend={translate('sel.icon.legend', [[1, scale]])}>
+      <Fieldset legend={translate('sel.icon.legend', [[1, ((aspect - padding * 2) / aspect).toFixed(2)]])}>
         <Text {...textProps}>
           {translate('sel.icon.pad')} ({padding})
         </Text>
@@ -57,13 +66,22 @@ export default function IconTab({ res, layersProps }: IconTabProps) {
         {translate(`sel.icon.${openItems.length === 0 ? 'o' : 'c'}-all`)}
       </Button>
 
-      <Accordion multiple variant="separated" value={openItems}>
-        <ScrollArea.Autosize mah={520} mx="auto" type="never">
-          {layersProps.map((layerProps, i) => (
-            <IconLayer key={i} i={i} {...layerProps} res={res} padding={padding} onClick={controlItems} />
-          ))}
-        </ScrollArea.Autosize>
-      </Accordion>
+      {holderRef.current && (
+        <Accordion multiple variant="separated" value={openItems}>
+          <ScrollArea.Autosize mah={520} mx="auto" type="never">
+            {layers.map((_, i) => (
+              <IconLayer
+                key={i}
+                i={i}
+                res={res}
+                padding={padding}
+                onClick={controlItems}
+                el={holderRef.current?.children[i] as HTMLCanvasElement}
+              />
+            ))}
+          </ScrollArea.Autosize>
+        </Accordion>
+      )}
     </Stack>
   )
 }
@@ -77,27 +95,29 @@ export interface IconLayerProps {
   /**
    * Reference to the canvas used to draw the layer
    */
-  elRef: React.RefObject<HTMLCanvasElement | null>
+  el: HTMLCanvasElement
 
-  /**
-   * Layer image path
-   */
-  path: string
+  res: Res
 
   padding: number
 
   onClick: (itemI: string) => void
-
-  res: Res
-
-  colors: Color[]
 }
 
-function IconLayer({ i, path, colors, elRef: ref, res, padding, onClick }: IconLayerProps) {
-  const [color, setColor] = useState<Color | null>('#ffffffff')
+function IconLayer({ i, el: canvas, res, padding, onClick }: IconLayerProps) {
+  const {
+    icon: { layers }
+  } = useContext(LogoContext) || { icon: { layers: [] } }
+  const { colors, path, type } = layers[i]
+
+  const [color, setColor] = useState<Color | null>(((colors[0] + 'ff') as Color) || null)
 
   useEffect(() => {
-    const canvas = ref.current
+    if (colors.length === 0 || colors[0] === color?.substring(0, 7)) return
+    setColor((colors[0] + 'ff') as Color)
+  }, [colors])
+
+  useEffect(() => {
     if (!canvas) return
 
     const ctx = canvas.getContext('2d', { alpha: true, willReadFrequently: true })
@@ -112,7 +132,7 @@ function IconLayer({ i, path, colors, elRef: ref, res, padding, onClick }: IconL
     canvas.height = h
 
     const img = new Image()
-    img.src = path
+    img.src = `${path}.${type}`
     img.onload = () => {
       const iw = img.width
       const ih = img.height
@@ -144,7 +164,7 @@ function IconLayer({ i, path, colors, elRef: ref, res, padding, onClick }: IconL
 
       ctx.putImageData(imageData, 0, 0)
     }
-  }, [ref, color, path, res, padding])
+  }, [canvas, res, color, path, type, padding])
 
   return (
     <Accordion.Item key={i} value={i.toString()}>

@@ -1,3 +1,5 @@
+import { createContext } from 'react'
+
 export type Logo = {
   /** */
   canvas: LogoCanvas
@@ -65,3 +67,16 @@ export type Color =
   | `#${string}`
   | `rgb(${number},${number},${number})`
   | `rgba(${number},${number},${number},${number})`
+
+export const LogoContext = createContext<Logo | null>(null)
+
+// export function loadLogo(file: File): Promise<Logo> {
+//   return new Promise((resolve, reject) => {
+//     const reader = new FileReader()
+//     reader.onload = () => {
+//       resolve()
+//     }
+//     reader.onerror = reject
+//     reader.readAsText(file)
+//   })
+// }
