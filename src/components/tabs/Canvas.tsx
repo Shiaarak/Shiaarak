@@ -76,7 +76,11 @@ export default function CanvasTab({ elRef: ref, onResChange }: CanvasTabProps) {
     }
 
     onResChange(res)
-  }, [color, res, ref, onResChange])
+  }, [ref, color, res])
+
+  useEffect(() => {
+    onResChange(res)
+  }, [onResChange])
 
   return (
     <Stack justify="flex-start" gap="xs">

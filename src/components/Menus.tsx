@@ -43,16 +43,11 @@ export default function Menus({ onLangChange }: MenusProps) {
   }
 
   function cancelChanges() {
-    if (!langSelRef.current) {
-      return
-    }
-
+    if (!langSelRef.current) return
     langSelRef.current.value = lang.name
   }
   function saveChanges() {
-    if (!langSelRef.current || !isLangName(langSelRef.current.value)) {
-      return
-    }
+    if (!langSelRef.current || !isLangName(langSelRef.current.value)) return
 
     const newLang = Object.values(langs).find((l) => l.name === langSelRef.current?.value)
     if (newLang) {

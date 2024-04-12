@@ -11,8 +11,8 @@ export default function App() {
   const bgRef = useRef<HTMLCanvasElement>(null)
   const iconLayersHolderRef = useRef<HTMLDivElement>(null)
 
-  const [res, setRes] = useState<Res>({ w: 1000, h: 1000 })
-  const [lang, setLang] = useLocalStorage<Lang>({
+  const [res, setRes] = useState<Res>({ w: 500, h: 500 })
+  const [lang, setLang]: [Lang, (lang: Lang) => void] = useLocalStorage<Lang>({
     key: 'settings.lang',
     defaultValue: langs.ar
   })
@@ -30,8 +30,8 @@ export default function App() {
   }, [])
 
   useEffect(() => {
-    import(`./langs/${lang.code}.json`).then(({ default: obj }: { default: object }) => {
-      setTranslation(lang, obj)
+    import(`./langs/${lang.code}.json`).then(({ default: data }: { default: object }) => {
+      setTranslation(lang, data)
       forceUpdate()
     })
 
