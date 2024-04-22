@@ -12,22 +12,12 @@ export default function App() {
   const iconLayersHolderRef = useRef<HTMLDivElement>(null)
 
   const [res, setRes] = useState<Res>({ w: 500, h: 500 })
-  const [lang, setLang]: [Lang, (lang: Lang) => void] = useLocalStorage<Lang>({
+  const [lang, setLang] = useLocalStorage<Lang>({
     key: 'settings.lang',
     defaultValue: langs.ar
   })
-  const [logo, setLogo]: [Logo | null, (logo: Logo) => void] = useLocalStorage<Logo | null>({
-    key: 'file',
-    defaultValue: null
-  })
+  const [logo, setLogo] = useState<Logo | null>(null)
   const forceUpdate = useForceUpdate()
-
-  useEffect(() => {
-    import('./logo.json').then(({ default: data }: { default: object }) => {
-      setLogo(data as Logo)
-      forceUpdate()
-    })
-  }, [])
 
   useEffect(() => {
     import(`./langs/${lang.code}.json`).then(({ default: data }: { default: object }) => {
@@ -44,6 +34,11 @@ export default function App() {
     }
   }, [lang])
 
+  function handleFileImport(logo: Logo) {
+    setLogo(logo)
+    forceUpdate()
+  }
+
   return (
     <LangContext.Provider value={lang}>
       <LogoContext.Provider value={logo}>
@@ -54,7 +49,7 @@ export default function App() {
         padding="md"
       >
         <AppShell.Header dir={lang.dir} pr={10} pl={10}>
-          <Menus onLangChange={setLang} />
+            <Menus onLangChange={setLang} onLogoChange={handleFileImport} />
         </AppShell.Header>
         <AppShell.Main>
           <Container fluid bg="#242424">

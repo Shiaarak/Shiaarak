@@ -1,20 +1,25 @@
 import type { MenuProps, ButtonProps, MenuItemProps, PolymorphicComponentProps } from '@mantine/core'
 
-import { Button, Group, Menu, Modal, Select, Space, Text } from '@mantine/core'
+import { Button, FileInput, Group, Menu, Modal, Select, Space, Text } from '@mantine/core'
 import { IconExternalLink, IconFile, IconInfoCircle, IconLanguage, IconSettings } from '@tabler/icons-react'
 import { iconProps, translate, textProps, type Lang, isLangName, LangContext, langs } from '../settings'
 import { useDisclosure } from '@mantine/hooks'
-import { useContext, useRef } from 'react'
+import { useContext, useRef, useState } from 'react'
+import { type Logo } from '../logo'
 
 export interface MenusProps {
   onLangChange: (lang: Lang) => void
+  onLogoChange: (logo: Logo) => void
 }
 
-export default function Menus({ onLangChange }: MenusProps) {
+export default function Menus({ onLangChange, onLogoChange }: MenusProps) {
   const langSelRef = useRef<HTMLInputElement>(null)
   const lang = useContext(LangContext)
 
-  const [opened, { open, close }] = useDisclosure(false)
+  const [tempLogo, setTempLogo] = useState<Logo | null>(null)
+
+  const [settingsOpened, { open: openSettings, close: closeSettings }] = useDisclosure(false)
+  const [fileOpened, { open: openFile, close: closeFile }] = useDisclosure(false)
 
   const menuProps: MenuProps = {
     withArrow: true,
@@ -42,18 +47,69 @@ export default function Menus({ onLangChange }: MenusProps) {
     target: '_blank'
   }
 
-  function cancelChanges() {
-    if (!langSelRef.current) return
-    langSelRef.current.value = lang.name
-  }
-  function saveChanges() {
-    if (!langSelRef.current || !isLangName(langSelRef.current.value)) return
+  function cancelChanges(key: string) {
+    switch (key) {
+      case 'lang': {
+        if (!langSelRef.current) return
+        langSelRef.current.value = lang.name
 
-    const newLang = Object.values(langs).find((l) => l.name === langSelRef.current?.value)
-    if (newLang) {
-      onLangChange(newLang)
+        closeSettings()
+        return
+      }
+
+      case 'file': {
+        if (!tempLogo) return
+        setTempLogo(null)
+
+        closeFile()
+        return
+      }
     }
-    close()
+  }
+  function saveChanges(key: string) {
+    switch (key) {
+      case 'lang': {
+        if (!langSelRef.current || !isLangName(langSelRef.current.value)) return
+
+        const newLang = Object.values(langs).find((l) => l.name === langSelRef.current?.value)
+        if (newLang) {
+          onLangChange(newLang)
+        }
+
+        closeSettings()
+        return
+      }
+
+      case 'file': {
+        if (!tempLogo) return
+
+        onLogoChange(tempLogo)
+
+        closeFile()
+        return
+      }
+    }
+  }
+
+  function loadFile(file: File | null) {
+    if (!file) return
+
+    const reader = new FileReader()
+    reader.onload = () => {
+      const logo: Logo = JSON.parse(reader.result as string)
+      logo.icon.layers = logo.icon.layers.map((l) => {
+        if (typeof l.img === 'string') {
+          const img = new Image()
+          img.src = l.img
+          l.img = img
+        }
+
+        return l
+      })
+
+      setTempLogo(logo)
+    }
+    reader.readAsText(file)
   }
 
   return (
@@ -91,7 +147,7 @@ export default function Menus({ onLangChange }: MenusProps) {
         </Menu.Target>
 
         <Menu.Dropdown>
-          <Menu.Item onClick={open}>
+          <Menu.Item onClick={openSettings}>
             {translate('menus.lang')}: {lang.name}
           </Menu.Item>
         </Menu.Dropdown>
@@ -105,19 +161,17 @@ export default function Menus({ onLangChange }: MenusProps) {
         </Menu.Target>
 
         <Menu.Dropdown>
-          <Menu.Item>{translate('menus.import')}</Menu.Item>
+          <Menu.Item onClick={openFile}>{translate('menus.import')}</Menu.Item>
           <Menu.Item>{translate('menus.export')}</Menu.Item>
         </Menu.Dropdown>
       </Menu>
       <Modal
         centered
+        mih={200}
+        miw={300}
         title={translate('menus.lang')}
-        size="auto"
-        opened={opened}
-        onClose={() => {
-          cancelChanges()
-          close()
-        }}
+        opened={settingsOpened}
+        onClose={() => cancelChanges('lang')}
       >
         <Text {...textProps}>{lang.name}</Text>
         <Space h="xs" />
@@ -143,7 +197,23 @@ export default function Menus({ onLangChange }: MenusProps) {
           style={{ direction: lang.dir }}
         />
         <Space h="sm" />
-        <Button onClick={saveChanges}>{translate('menus.save')}</Button>
+        <Button onClick={() => saveChanges('lang')}>{translate('menus.save')}</Button>
+      </Modal>
+      <Modal
+        centered
+        mih={200}
+        miw={300}
+        title={translate('menus.import')}
+        opened={fileOpened}
+        onClose={() => cancelChanges('file')}
+      >
+        <Text {...textProps}>{translate('menus.import')}</Text>
+        <Space h="xs" />
+
+        <FileInput accept=".logo.json" onChange={loadFile} />
+
+        <Space h="sm" />
+        <Button onClick={() => saveChanges('file')}>{translate('menus.save')}</Button>
       </Modal>
     </Group>
   )

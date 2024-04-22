@@ -56,89 +56,93 @@ export default function ResSel({ value, choices, onChange }: ResSelProps) {
         [2, value.h]
       ])}
     >
-      <Text {...textProps}>{translate('sel.res.ratio')}</Text>
-      <Space h="xs" />
-      <Button.Group
-        className="m-4081bf90 mantine-Group-root"
-        styles={{
-          group: {
-            gap: 'calc(0.2rem * var(--mantine-scale))',
-            align: 'center',
-            justify: 'flex-start',
-            wrap: 'wrap',
-            marginTop: 'calc(0.125rem * var(--mantine-scale))'
-          }
-        }}
-      >
-        {choices.map((r, i) => {
-          return (
-            <Button
-              key={i}
-              variant={JSON.stringify(ratio) == JSON.stringify(r) ? 'filled' : 'default'}
-              size="compact-xs"
-              radius="sm"
-              onClick={() => handleRatioChange(r)}
-              className="mantine-focus-auto m-5e1a038c m-de3d2490 mantine-ColorSwatch-root"
-              styles={{
-                root: {
-                  '--cs-size': 'calc(2.5rem * var(--mantine-scale))',
-                  '--cs-radius': 'var(--mantine-radius-sm)'
-                }
-              }}
-            >
-              {`${r.b}x${r.s}`}
-            </Button>
-          )
-        })}
-      </Button.Group>
-
-      {ratio.dir && (
+      {choices.length > 0 && (
         <>
+          <Text {...textProps}>{translate('sel.res.ratio')}</Text>
+          <Space h="xs" />
+          <Button.Group
+            className="m-4081bf90 mantine-Group-root"
+            styles={{
+              group: {
+                gap: 'calc(0.2rem * var(--mantine-scale))',
+                align: 'center',
+                justify: 'flex-start',
+                wrap: 'wrap',
+                marginTop: 'calc(0.125rem * var(--mantine-scale))'
+              }
+            }}
+          >
+            {choices.map((r, i) => {
+              return (
+                <Button
+                  key={i}
+                  variant={JSON.stringify(ratio) == JSON.stringify(r) ? 'filled' : 'default'}
+                  size="compact-xs"
+                  radius="sm"
+                  onClick={() => handleRatioChange(r)}
+                  className="mantine-focus-auto m-5e1a038c m-de3d2490 mantine-ColorSwatch-root"
+                  styles={{
+                    root: {
+                      '--cs-size': 'calc(2.5rem * var(--mantine-scale))',
+                      '--cs-radius': 'var(--mantine-radius-sm)'
+                    }
+                  }}
+                >
+                  {`${r.b}x${r.s}`}
+                </Button>
+              )
+            })}
+          </Button.Group>
+
+          {ratio.dir && (
+            <>
+              <Space h="sm" />
+
+              <Text {...textProps}>{translate('sel.res.dir')}</Text>
+              <Space h="xs" />
+              <SegmentedControl
+                fullWidth
+                defaultChecked
+                variant="filled"
+                color={theme.primaryColor}
+                value={dir}
+                onChange={(val) => setDir(val as AspectRatioDir)}
+                defaultValue="l"
+                data={[
+                  {
+                    value: 'l',
+                    disabled: !ratio.dir?.l,
+                    label: (
+                      <Center style={{ gap: 5 }}>
+                        <IconCropLandscape {...iconProps} />
+                        <Text {...textProps}>{translate('sel.res.l')}</Text>
+                      </Center>
+                    )
+                  },
+                  {
+                    value: 'p',
+                    disabled: !ratio.dir?.p,
+                    label: (
+                      <Center style={{ gap: 5 }}>
+                        <IconCropPortrait {...iconProps} />
+                        <Text {...textProps}>{translate('sel.res.p')}</Text>
+                      </Center>
+                    )
+                  }
+                ]}
+              />
+            </>
+          )}
+
           <Space h="sm" />
 
-          <Text {...textProps}>{translate('sel.res.dir')}</Text>
+          <Text {...textProps}>
+            {translate('sel.res.p-m')} ({mul})
+          </Text>
           <Space h="xs" />
-          <SegmentedControl
-            fullWidth
-            defaultChecked
-            variant="filled"
-            color={theme.primaryColor}
-            value={dir}
-            onChange={(val) => setDir(val as AspectRatioDir)}
-            defaultValue="l"
-            data={[
-              {
-                value: 'l',
-                disabled: !ratio.dir?.l,
-                label: (
-                  <Center style={{ gap: 5 }}>
-                    <IconCropLandscape {...iconProps} />
-                    <Text {...textProps}>{translate('sel.res.l')}</Text>
-                  </Center>
-                )
-              },
-              {
-                value: 'p',
-                disabled: !ratio.dir?.p,
-                label: (
-                  <Center style={{ gap: 5 }}>
-                    <IconCropPortrait {...iconProps} />
-                    <Text {...textProps}>{translate('sel.res.p')}</Text>
-                  </Center>
-                )
-              }
-            ]}
-          />
+          <Slider value={mul} onChange={setMul} min={1} max={1000} label={null} />
         </>
       )}
-
-      <Space h="sm" />
-
-      <Text {...textProps}>
-        {translate('sel.res.p-m')} ({mul})
-      </Text>
-      <Space h="xs" />
-      <Slider value={mul} onChange={setMul} min={1} max={1000} label={null} />
     </Fieldset>
   )
 }
