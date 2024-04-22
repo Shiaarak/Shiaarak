@@ -112,6 +112,31 @@ export default function Menus({ onLangChange, onLogoChange }: MenusProps) {
     reader.readAsText(file)
   }
 
+  function exportImage(name: string) {
+    const container = document.getElementById(`${name}-holder`)
+    const canvas = document.createElement('canvas')
+    const context = canvas.getContext('2d')
+    const canvases = Array.from(container?.querySelectorAll('canvas') ?? [])
+
+    const maxWidth = Math.max(...canvases.map((c) => c.width))
+    const maxHeight = Math.max(...canvases.map((c) => c.height))
+
+    canvas.width = maxWidth
+    canvas.height = maxHeight
+    canvases.forEach((c) => context?.drawImage(c, 0, 0))
+
+    return canvas.toDataURL('image/png')
+  }
+
+  function downloadImages() {
+    const name = 'logo'
+
+    const link = document.createElement('a')
+    link.href = exportImage(name)
+    link.download = `${name}.png`
+    link.click()
+  }
+
   return (
     <Group gap={0} p={4} ps={0}>
       <Menu key={0} {...menuProps}>
@@ -162,7 +187,7 @@ export default function Menus({ onLangChange, onLogoChange }: MenusProps) {
 
         <Menu.Dropdown>
           <Menu.Item onClick={openFile}>{translate('menus.import')}</Menu.Item>
-          <Menu.Item>{translate('menus.export')}</Menu.Item>
+          <Menu.Item onClick={downloadImages}>{translate('menus.export')}</Menu.Item>
         </Menu.Dropdown>
       </Menu>
       <Modal

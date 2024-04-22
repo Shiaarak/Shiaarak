@@ -42,35 +42,35 @@ export default function App() {
   return (
     <LangContext.Provider value={lang}>
       <LogoContext.Provider value={logo}>
-      <AppShell
-        bg={'dark'}
-        aside={{ width: 300, breakpoint: 'xs', collapsed: { desktop: false, mobile: true } }}
-        header={{ height: 30, offset: true }}
-        padding="md"
-      >
-        <AppShell.Header dir={lang.dir} pr={10} pl={10}>
+        <AppShell
+          bg={'dark'}
+          aside={{ width: 300, breakpoint: 'xs', collapsed: { desktop: false, mobile: true } }}
+          header={{ height: 30, offset: true }}
+          padding="md"
+        >
+          <AppShell.Header dir={lang.dir} pr={10} pl={10}>
             <Menus onLangChange={setLang} onLogoChange={handleFileImport} />
-        </AppShell.Header>
-        <AppShell.Main>
-          <Container fluid bg="#242424">
-            <Center style={{ position: 'relative', justifyContent: 'center', alignItems: 'center' }}>
-              <canvas ref={bgRef} />
+          </AppShell.Header>
+          <AppShell.Main>
+            <Container fluid bg="#242424">
+              <Center id="logo-holder" style={{ position: 'relative', justifyContent: 'center', alignItems: 'center' }}>
+                <canvas ref={bgRef} />
                 {(logo?.icon.layers.length || 0) > 0 && (
-                <Center ref={iconLayersHolderRef} style={{ position: 'absolute' }}>
-                  {logo?.icon.layers.map((_, i) => <canvas key={i} style={{ position: 'absolute' }} />)}
-                </Center>
+                  <Center id="icon-holder" ref={iconLayersHolderRef} style={{ position: 'absolute' }}>
+                    {logo?.icon.layers.map((_, i) => <canvas key={i} style={{ position: 'absolute' }} />)}
+                  </Center>
                 )}
-            </Center>
-          </Container>
-        </AppShell.Main>
-        <AppShell.Aside bg={'dark'} p="md">
-          <Tabs defaultValue="c">
-            <Tabs.List grow justify="center">
-              <Tabs.Tab value="c">{translate('tabs.c')}</Tabs.Tab>
-              <Tabs.Tab value="i">{translate('tabs.i')}</Tabs.Tab>
-              <Tabs.Tab value="t">{translate('tabs.t')}</Tabs.Tab>
-            </Tabs.List>
-            <Tabs.Panel value="c">
+              </Center>
+            </Container>
+          </AppShell.Main>
+          <AppShell.Aside bg={'dark'} p="md">
+            <Tabs defaultValue="c">
+              <Tabs.List grow justify="center">
+                <Tabs.Tab value="c">{translate('tabs.c')}</Tabs.Tab>
+                <Tabs.Tab value="i">{translate('tabs.i')}</Tabs.Tab>
+                <Tabs.Tab value="t">{translate('tabs.t')}</Tabs.Tab>
+              </Tabs.List>
+              <Tabs.Panel value="c">
                 <CanvasTab elRef={bgRef} onResChange={setRes} />
               </Tabs.Panel>
               <Tabs.Panel value="i">
@@ -78,8 +78,8 @@ export default function App() {
               </Tabs.Panel>
               {/* <Tabs.Panel value="t">{<TextTab />}</Tabs.Panel> */}
             </Tabs>
-        </AppShell.Aside>
-      </AppShell>
+          </AppShell.Aside>
+        </AppShell>
       </LogoContext.Provider>
     </LangContext.Provider>
   )
