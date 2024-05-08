@@ -6,13 +6,21 @@ import IconTab from './components/tabs/Icon'
 import Menus from './components/Menus'
 import { type Lang, LangContext, setTranslation, langs, textProps, translate } from './settings'
 import { type Logo, LogoContext } from './logo'
-import Preview, { reducer as previewReducer } from './components/Preview'
+import Preview, {
+  type PreviewWithAction,
+  type PreviewReducerAction,
+  reducer as previewReducer
+} from './components/Preview'
 
 export default function App() {
-  const [preview, previewDispatch] = useReducer(previewReducer, {
-    canvas: { res: { w: 500, h: 500 } },
-    icon: { padding: 0, layers: [] }
-  })
+  // @ts-ignore
+  const [preview, previewDispatch]: [PreviewWithAction, React.Dispatch<PreviewReducerAction>] = useReducer(
+    previewReducer,
+    {
+      canvas: { res: { w: 500, h: 500 } },
+      icon: { padding: 0, layers: [] }
+    }
+  )
   const [lang, setLang] = useLocalStorage<Lang>({
     key: 'settings.lang',
     defaultValue: langs.ar

@@ -37,16 +37,17 @@ export type PreviewReducerLayerAction =
       }
     }
 
-export function reducer(preview: Preview, { type, payload }: PreviewReducerAction): Preview {
+export function reducer(preview: PreviewWithAction, action: PreviewReducerAction): PreviewWithAction {
+  const { type, payload } = action
   switch (type) {
     case 'c-res': {
-      return { ...preview, canvas: { ...preview.canvas, res: payload } }
+      return { ...preview, canvas: { ...preview.canvas, res: payload }, ...action }
     }
     case 'c-color': {
-      return { ...preview, canvas: { ...preview.canvas, color: payload } }
+      return { ...preview, canvas: { ...preview.canvas, color: payload }, ...action }
     }
     case 'i-padding': {
-      return { ...preview, icon: { ...preview.icon, padding: payload } }
+      return { ...preview, icon: { ...preview.icon, padding: payload }, ...action }
     }
     case 'l-img': {
       const { i, img } = payload
@@ -56,7 +57,7 @@ export function reducer(preview: Preview, { type, payload }: PreviewReducerActio
       else if (i === len) preview.icon.layers.push({ img })
       else throw new Error(`Invalid layer index: ${i}`)
 
-      return { ...preview, icon: { ...preview.icon, layers: [...preview.icon.layers] } }
+      return { ...preview, icon: { ...preview.icon, layers: [...preview.icon.layers] }, ...action }
     }
     case 'l-color': {
       const { i, color } = payload
@@ -65,7 +66,7 @@ export function reducer(preview: Preview, { type, payload }: PreviewReducerActio
       if (i < len) preview.icon.layers[i].color = color
       else throw new Error(`Invalid layer index: ${i}`)
 
-      return { ...preview, icon: { ...preview.icon, layers: [...preview.icon.layers] } }
+      return { ...preview, icon: { ...preview.icon, layers: [...preview.icon.layers] }, ...action }
     }
   }
 
@@ -74,24 +75,39 @@ export function reducer(preview: Preview, { type, payload }: PreviewReducerActio
 }
 
 export interface PreviewProps {
-  preview: Preview
+  preview: PreviewWithAction
 }
 
-export default function Preview({ preview: { canvas, icon } }: PreviewProps) {
+export default function Preview({ preview: { canvas, icon, type: actionType, payload: actionPayload } }: PreviewProps) {
   const bgRef = useRef<HTMLCanvasElement>(null)
   const iconLayersHolderRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    drawCanvas({ ...canvas, ref: bgRef })
+    if (!bgRef.current) return
+    drawCanvas({ ...canvas, el: bgRef.current })
+
+    if (actionType === 'c-res') callDrawIcon()
   }, [canvas])
 
   useEffect(() => {
+    if (actionType === 'i-padding') callDrawIcon()
+    else if (actionType === 'l-img' || actionType === 'l-color')
+      drawLayer({
+        el: iconLayersHolderRef.current?.children[actionPayload.i] as HTMLCanvasElement,
+        res: canvas.res,
+        padding: icon.padding,
+        ...icon.layers[actionPayload.i]
+      })
+  }, [icon])
+
+  function callDrawIcon() {
+    if (!iconLayersHolderRef.current) return
     drawIcon({
       ...canvas,
       ...icon,
-      ref: iconLayersHolderRef
+      holder: iconLayersHolderRef.current
     })
-  }, [icon])
+  }
 
   return (
     <Container fluid bg="#242424">
@@ -109,6 +125,7 @@ export default function Preview({ preview: { canvas, icon } }: PreviewProps) {
   )
 }
 
+export type PreviewWithAction = Preview & PreviewReducerAction
 export interface Preview {
   canvas: CanvasPreview
   icon: IconPreview
@@ -126,17 +143,10 @@ export interface IconLayerPreview {
   color?: Color
 }
 
-function drawCanvas({
-  ref: { current: canvas },
-  res: { w, h },
-  color
-}: CanvasPreview & { ref: React.RefObject<HTMLCanvasElement> }) {
-  if (!canvas) return
-
+function drawCanvas({ el: canvas, res: { w, h }, color }: CanvasPreview & { el: HTMLCanvasElement }) {
   const ctx = canvas.getContext('2d')
   if (!ctx) return
 
-  console.log('📢 | file: Preview.tsx:138 | color:', color)
   if (color) {
     canvas.width = w
     canvas.height = h
@@ -165,15 +175,9 @@ function drawCanvas({
   }
 }
 
-function drawIcon({
-  ref: { current: holder },
-  res,
-  padding,
-  layers
-}: IconPreview & { ref: React.RefObject<HTMLDivElement>; res: Res }) {
+function drawIcon({ holder, res, padding, layers }: IconPreview & { holder: HTMLDivElement; res: Res }) {
   for (let i = 0; i < layers.length; i++) {
-    const el = holder?.children[i] as HTMLCanvasElement
-    if (!el) continue
+    const el = holder.children[i] as HTMLCanvasElement
     drawLayer({ el, res, padding, ...layers[i] })
   }
 }
@@ -188,9 +192,9 @@ function drawLayer({
   res: Res
   padding: number
 }) {
-  if (!canvas || !img || typeof img === 'string' || !img.src) return
+  if (!img || typeof img === 'string') return
 
-  const ctx = canvas.getContext('2d', { alpha: true, willReadFrequently: true })
+  const ctx = canvas.getContext('2d', { willReadFrequently: true })
   if (!ctx) return
 
   if (typeof color !== 'string') {
@@ -214,18 +218,20 @@ function drawLayer({
   ctx.drawImage(img, 0, 0, iw, ih, xCenterShift, yCenterShift, iw * ratio, ih * ratio)
 
   const imageData = ctx.getImageData(0, 0, w, h)
-  const data = imageData.data
+  const data = new Uint32Array(imageData.data.buffer)
+
+  const red = parseInt(color.slice(1, 3), 16)
+  const green = parseInt(color.slice(3, 5), 16)
+  const blue = parseInt(color.slice(5, 7), 16)
+  const alpha = parseInt(color.slice(7, 9), 16)
 
   // Loop through each pixel to change non-transparent pixels to the new color
-  for (let i = 0; i < data.length; i += 4) {
-    if (data[i + 3] === 0) {
+  for (let i = 0; i < data.length; i++) {
+    if ((data[i] & 0xff000000) === 0) {
       continue
     }
 
-    data[i] = parseInt(color.slice(1, 3), 16)
-    data[i + 1] = parseInt(color.slice(3, 5), 16)
-    data[i + 2] = parseInt(color.slice(5, 7), 16)
-    data[i + 3] = parseInt(color.slice(7, 9), 16)
+    data[i] = (alpha << 24) | (blue << 16) | (green << 8) | red
   }
 
   ctx.putImageData(imageData, 0, 0)
