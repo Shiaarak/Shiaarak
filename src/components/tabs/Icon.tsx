@@ -57,7 +57,7 @@ export default function IconTab({ res: { w, h }, dispatch }: IconTabProps) {
     <Stack justify="flex-start" gap="xs">
       <Space h="xs" />
 
-      <Fieldset legend={translate('tab.icon.legend', [[1, ((aspect - padding * 2) / aspect).toFixed(2)]])}>
+      <Fieldset legend={translate('tab.icon.legend', [((aspect - padding * 2) / aspect).toFixed(2)])}>
         {layers.length > 0 && (
           <>
             <Text {...textProps}>

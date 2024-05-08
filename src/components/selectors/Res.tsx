@@ -56,12 +56,7 @@ export default function ResSel({ value, choices, onChange }: ResSelProps) {
   }
 
   return (
-    <Fieldset
-      legend={translate('sel.res.legend', [
-        [1, value.w],
-        [2, value.h]
-      ])}
-    >
+    <Fieldset legend={translate('sel.res.legend', [value.w, value.h])}>
       {choices.length > 0 && (
         <>
           <Text {...textProps}>{translate('sel.res.ratio')}</Text>

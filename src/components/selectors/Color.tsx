@@ -51,10 +51,10 @@ export default function ColorSel({ choices, onChange }: ColorSelProps) {
         (opacity === 0
           ? translate('sel.color.transparent')
           : translate('sel.color.rbga', [
-              [1, parseInt(color.slice(1, 3), 16)],
-              [2, parseInt(color.slice(3, 5), 16)],
-              [3, parseInt(color.slice(5, 7), 16)],
-              [4, Math.round(opacity * 100)]
+              parseInt(color.slice(1, 3), 16),
+              parseInt(color.slice(3, 5), 16),
+              parseInt(color.slice(5, 7), 16),
+              Math.round(opacity * 100)
             ]))
       }
     >

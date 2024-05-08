@@ -32,16 +32,13 @@ export const LangContext = createContext<Lang>(langs.ar)
 
 const translation = new Map<string, string>()
 
-export function translate(key: string, replacements?: [number, string | number][]): string {
+export function translate(key: string, replacements?: (string | number)[]): string {
   let val = translation.get(key)
   if (!val) return ''
 
-  if (replacements && replacements.length > 0) {
-    val = replacements.reduce(
-      (acc, [num, toInsert]) => acc.replace(new RegExp(`\\$${num}`, 'g'), toInsert.toString()),
-      val
-    )
-  }
+  if (replacements && replacements.length > 0)
+    for (let i = 0; i < replacements.length; i++)
+      val = val.replace(new RegExp(`\\$${i + 1}`, 'g'), replacements[i].toString())
 
   return val
 }
