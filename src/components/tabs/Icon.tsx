@@ -74,7 +74,7 @@ export default function IconTab({ res: { w, h }, dispatch }: IconTabProps) {
       {layers.length > 0 && (
         <>
           <Button fullWidth onClick={() => controlItems()}>
-            {translate(`sel.icon.${openItems.length === 0 ? 'o' : 'c'}-all`)}
+            {translate(`tab.icon.${openItems.length === 0 ? 'o' : 'c'}-all`)}
           </Button>
 
           <Accordion multiple variant="separated" value={openItems}>
