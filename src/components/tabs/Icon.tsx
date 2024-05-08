@@ -1,3 +1,5 @@
+import type { PreviewReducerAction } from '../Preview'
+
 import { useContext, useEffect, useState } from 'react'
 import { Stack, Accordion, Space, ScrollArea, Divider, Slider, Text, Fieldset, Button } from '@mantine/core'
 import { textProps, translate } from '../../settings'
@@ -5,19 +7,18 @@ import ColorSel from '../selectors/Color'
 import { LogoContext, type LogoIcon, type Color, type Res } from '../../logo'
 
 export interface IconTabProps {
-  /**
-   * Reference to the canvas used to draw the layer
-   */
-  holderRef: React.RefObject<HTMLDivElement>
+  /** Used to update the IconTab changes */
+  dispatch: React.Dispatch<PreviewReducerAction>
 
+  /** Used to calculate the padding */
   res: Res
 }
 
-export default function IconTab({ holderRef, res }: IconTabProps) {
+export default function IconTab({ res: { w, h }, dispatch }: IconTabProps) {
   const { icon } = useContext(LogoContext) || { icon: { padding: 0.1, layers: [] } }
   const { padding: p, layers }: LogoIcon = icon
 
-  const aspect = Math.min(res.w, res.h)
+  const aspect = Math.min(w, h)
   const maxPadding = aspect * 0.5
 
   const [padding, setPadding] = useState<number>(maxPadding * p)
@@ -26,7 +27,11 @@ export default function IconTab({ holderRef, res }: IconTabProps) {
   useEffect(() => {
     if (p === padding / maxPadding) return
     setPadding(maxPadding * p)
-  }, [res, p])
+  }, [w, h, p])
+
+  useEffect(() => {
+    dispatch({ type: 'i-padding', payload: padding })
+  }, [padding, dispatch])
 
   function controlItems(itemI?: string) {
     if (itemI) {
@@ -72,22 +77,13 @@ export default function IconTab({ holderRef, res }: IconTabProps) {
             {translate(`sel.icon.${openItems.length === 0 ? 'o' : 'c'}-all`)}
           </Button>
 
-          {holderRef.current && (
-            <Accordion multiple variant="separated" value={openItems}>
-              <ScrollArea.Autosize mah={520} mx="auto" type="never">
-                {layers.map((_, i) => (
-                  <IconLayer
-                    key={i}
-                    i={i}
-                    res={res}
-                    padding={padding}
-                    onClick={controlItems}
-                    el={holderRef.current?.children[i] as HTMLCanvasElement}
-                  />
-                ))}
-              </ScrollArea.Autosize>
-            </Accordion>
-          )}
+          <Accordion multiple variant="separated" value={openItems}>
+            <ScrollArea.Autosize mah={520} mx="auto" type="never">
+              {layers.map((_, i) => (
+                <IconLayer key={i} i={i} dispatch={dispatch} onClick={controlItems} />
+              ))}
+            </ScrollArea.Autosize>
+          </Accordion>
         </>
       )}
     </Stack>
@@ -95,24 +91,17 @@ export default function IconTab({ holderRef, res }: IconTabProps) {
 }
 
 export interface IconLayerProps {
-  /**
-   * Layer Index
-   */
+  /** Layer Index */
   i: number
 
-  /**
-   * Reference to the canvas used to draw the layer
-   */
-  el: HTMLCanvasElement
+  /** Used to update the IconTab layers changes */
+  dispatch: React.Dispatch<PreviewReducerAction>
 
-  res: Res
-
-  padding: number
-
+  /** Fired when the layer's head is clicked for toggling collapse */
   onClick: (itemI: string) => void
 }
 
-function IconLayer({ i, el: canvas, res, padding, onClick }: IconLayerProps) {
+function IconLayer({ i, dispatch, onClick }: IconLayerProps) {
   const {
     icon: { layers }
   } = useContext(LogoContext) || { icon: { layers: [] } }
@@ -126,49 +115,12 @@ function IconLayer({ i, el: canvas, res, padding, onClick }: IconLayerProps) {
   }, [colors])
 
   useEffect(() => {
-    if (!canvas || !img || typeof img === 'string' || !img.src) return
-
-    const ctx = canvas.getContext('2d', { alpha: true, willReadFrequently: true })
-    if (!ctx) return
-
-    if (typeof color !== 'string') {
-      return
-    }
-
-    const { w, h } = res
-    canvas.width = w
-    canvas.height = h
-
-    const iw = img.width
-    const ih = img.height
-
-    const wRatio = (w - 2 * padding) / iw
-    const hRatio = (h - 2 * padding) / ih
-    const ratio = Math.min(wRatio, hRatio)
-
-    const xCenterShift = (w - iw * ratio) * 0.5
-    const yCenterShift = (h - ih * ratio) * 0.5
-
-    ctx.clearRect(0, 0, w, h)
-    ctx.drawImage(img, 0, 0, iw, ih, xCenterShift, yCenterShift, iw * ratio, ih * ratio)
-
-    const imageData = ctx.getImageData(0, 0, w, h)
-    const data = imageData.data
-
-    // Loop through each pixel to change non-transparent pixels to the new color
-    for (let i = 0; i < data.length; i += 4) {
-      if (data[i + 3] === 0) {
-        continue
-      }
-
-      data[i] = parseInt(color.slice(1, 3), 16)
-      data[i + 1] = parseInt(color.slice(3, 5), 16)
-      data[i + 2] = parseInt(color.slice(5, 7), 16)
-      data[i + 3] = parseInt(color.slice(7, 9), 16)
-    }
-
-    ctx.putImageData(imageData, 0, 0)
-  }, [canvas, res, color, img, padding])
+    if (typeof img === 'string') throw new Error('img must not be a string')
+    dispatch({ type: 'l-img', payload: { i, img } })
+  }, [img, dispatch])
+  useEffect(() => {
+    dispatch({ type: 'l-color', payload: { i, color: color !== null ? color : '#00000000' } })
+  }, [color, dispatch])
 
   return (
     <Accordion.Item key={i} value={i.toString()}>

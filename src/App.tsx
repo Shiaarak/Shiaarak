@@ -1,17 +1,18 @@
-import { useEffect, useRef, useState } from 'react'
-import { Container, AppShell, Tabs, Center } from '@mantine/core'
+import { useEffect, useReducer, useState } from 'react'
+import { AppShell, Tabs } from '@mantine/core'
 import { useForceUpdate, useLocalStorage } from '@mantine/hooks'
 import CanvasTab from './components/tabs/Canvas'
 import IconTab from './components/tabs/Icon'
 import Menus from './components/Menus'
 import { type Lang, LangContext, setTranslation, langs, textProps, translate } from './settings'
-import { type Res, type Logo, LogoContext } from './logo'
+import { type Logo, LogoContext } from './logo'
+import Preview, { reducer as previewReducer } from './components/Preview'
 
 export default function App() {
-  const bgRef = useRef<HTMLCanvasElement>(null)
-  const iconLayersHolderRef = useRef<HTMLDivElement>(null)
-
-  const [res, setRes] = useState<Res>({ w: 500, h: 500 })
+  const [preview, previewDispatch] = useReducer(previewReducer, {
+    canvas: { res: { w: 500, h: 500 } },
+    icon: { padding: 0, layers: [] }
+  })
   const [lang, setLang] = useLocalStorage<Lang>({
     key: 'settings.lang',
     defaultValue: langs.ar
@@ -52,16 +53,7 @@ export default function App() {
             <Menus onLangChange={setLang} onLogoChange={handleFileImport} />
           </AppShell.Header>
           <AppShell.Main>
-            <Container fluid bg="#242424">
-              <Center id="logo-holder" style={{ position: 'relative', justifyContent: 'center', alignItems: 'center' }}>
-                <canvas ref={bgRef} />
-                {(logo?.icon.layers.length || 0) > 0 && (
-                  <Center id="icon-holder" ref={iconLayersHolderRef} style={{ position: 'absolute' }}>
-                    {logo?.icon.layers.map((_, i) => <canvas key={i} style={{ position: 'absolute' }} />)}
-                  </Center>
-                )}
-              </Center>
-            </Container>
+            <Preview preview={preview} />
           </AppShell.Main>
           <AppShell.Aside bg={'dark'} p="md">
             <Tabs defaultValue="c">
@@ -71,10 +63,10 @@ export default function App() {
                 <Tabs.Tab value="t">{translate('tabs.t')}</Tabs.Tab>
               </Tabs.List>
               <Tabs.Panel value="c">
-                <CanvasTab elRef={bgRef} onResChange={setRes} />
+                <CanvasTab dispatch={previewDispatch} />
               </Tabs.Panel>
               <Tabs.Panel value="i">
-                <IconTab holderRef={iconLayersHolderRef} res={res} />
+                <IconTab res={preview.canvas.res} dispatch={previewDispatch} />
               </Tabs.Panel>
               {/* <Tabs.Panel value="t">{<TextTab />}</Tabs.Panel> */}
             </Tabs>

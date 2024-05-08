@@ -1,24 +1,17 @@
+import type { PreviewReducerAction } from '../Preview'
+
 import { useContext, useEffect, useState } from 'react'
 import { Stack, Space } from '@mantine/core'
 import ColorSel from '../selectors/Color'
 import ResSel from '../selectors/Res'
 import { LogoContext, type Color, type Res } from '../../logo'
 
-const squareSize = 10
-
 export interface CanvasTabProps {
-  /**
-   * Reference to the canvas used to draw the background
-   */
-  elRef: React.RefObject<HTMLCanvasElement | null>
-
-  /**
-   * To be called when the resolution changes
-   */
-  onResChange: (value: Res) => void
+  /** Used to update the CanvasTab changes */
+  dispatch: React.Dispatch<PreviewReducerAction>
 }
 
-export default function CanvasTab({ elRef: ref, onResChange }: CanvasTabProps) {
+export default function CanvasTab({ dispatch }: CanvasTabProps) {
   const {
     canvas: { colors, ratios }
   } = useContext(LogoContext) || { canvas: { colors: [], ratios: [] } }
@@ -47,45 +40,11 @@ export default function CanvasTab({ elRef: ref, onResChange }: CanvasTabProps) {
   }, [colors, ratios])
 
   useEffect(() => {
-    const canvas = ref.current
-    if (!canvas) return
-
-    const ctx = canvas.getContext('2d')
-    if (!ctx) return
-
-    if (color) {
-      canvas.width = res.w
-      canvas.height = res.h
-
-      ctx.fillStyle = color as Color
-      ctx.fillRect(0, 0, canvas.width, canvas.height)
-    } else {
-      canvas.width = squareSize * 2
-      canvas.height = squareSize * 2
-
-      ctx.fillStyle = '#ffffff'
-      ctx.fillRect(0, 0, squareSize, squareSize)
-      ctx.fillRect(squareSize, squareSize, squareSize, squareSize)
-      ctx.fillStyle = '#c0c0C0'
-      ctx.fillRect(squareSize, 0, squareSize, squareSize)
-      ctx.fillRect(0, squareSize, squareSize, squareSize)
-
-      const pattern = ctx.createPattern(canvas, 'repeat')
-      if (!pattern) return
-
-      canvas.width = res.w
-      canvas.height = res.h
-
-      ctx.fillStyle = pattern
-      ctx.fillRect(0, 0, canvas.width, canvas.height)
-    }
-
-    onResChange(res)
-  }, [ref, color, res])
-
+    dispatch({ type: 'c-res', payload: res })
+  }, [res, dispatch])
   useEffect(() => {
-    onResChange(res)
-  }, [onResChange])
+    dispatch({ type: 'c-color', payload: color })
+  }, [color, dispatch])
 
   return (
     <Stack justify="flex-start" gap="xs">
