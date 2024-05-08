@@ -22,10 +22,12 @@ export default function ColorSel({ choices, onChange }: ColorSelProps) {
   const [color, setColor] = useState<Color>(choices[0] || '#ffffff')
 
   useEffect(() => {
-    if (choices.length === 0) {
-      setOpacity(0)
-    } else {
-      choices = choices.map((c) => (c.length > 7 ? (c.substring(0, 7) as Color) : c))
+    if (choices.length === 0) setOpacity(0)
+    else {
+      for (let i = 0; i < choices.length; i++) {
+        if (choices[i].length > 7) choices[i] = choices[i].substring(0, 7) as Color
+      }
+      setColor(choices[0])
     }
   }, [choices])
 
@@ -40,7 +42,7 @@ export default function ColorSel({ choices, onChange }: ColorSelProps) {
       .padStart(2, '0')
 
     onChange((color + opacityHex) as Color)
-  }, [color, opacity])
+  }, [color, opacity, onChange])
 
   return (
     <Fieldset

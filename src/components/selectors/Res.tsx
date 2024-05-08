@@ -30,11 +30,17 @@ export default function ResSel({ value, choices, onChange }: ResSelProps) {
   const [mul, setMul] = useState<number>(500)
 
   useEffect(() => {
+    if (choices.length === 0) return
+    setRatio(choices[0])
+    setDir(choices[0].dir?.p ? 'p' : 'l')
+  }, [choices])
+
+  useEffect(() => {
     const w = (dir === 'l' ? ratio.b : ratio.s) * mul
     const h = (dir === 'p' ? ratio.b : ratio.s) * mul
 
     onChange({ w, h })
-  }, [ratio, dir, mul])
+  }, [ratio, dir, mul, onChange])
 
   function handleRatioChange(r: AspectRatio) {
     setRatio(r)

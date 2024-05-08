@@ -107,7 +107,7 @@ function IconLayer({ i, dispatch, onClick }: IconLayerProps) {
   } = useContext(LogoContext) || { icon: { layers: [] } }
   const { colors, img } = layers[i]
 
-  const [color, setColor] = useState<Color | null>(((colors[0] + 'ff') as Color) || null)
+  const [color, setColor] = useState<Color | null>(colors.length > 0 ? ((colors[0] + 'ff') as Color) : null)
 
   useEffect(() => {
     if (colors.length === 0 || colors[0] === color?.substring(0, 7)) return

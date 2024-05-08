@@ -27,17 +27,16 @@ export default function CanvasTab({ dispatch }: CanvasTabProps) {
   )
 
   useEffect(() => {
-    if (colors.length > 0 && colors[0] !== color?.substring(0, 5)) {
-      setColor((colors[0] + 'ff') as Color)
-    }
-
-    if (ratios.length > 0 && (ratios[0].b !== res.w || ratios[0].s !== res.h)) {
-      setRes({
-        w: (ratios[0].dir?.p ? ratios[0].s : ratios[0].b) * 500,
-        h: (ratios[0].dir?.p ? ratios[0].b : ratios[0].s) * 500
-      })
-    }
-  }, [colors, ratios])
+    if (colors.length === 0 || colors[0] === color?.substring(0, 5)) return
+    setColor((colors[0] + 'ff') as Color)
+  }, [colors])
+  useEffect(() => {
+    if (ratios.length === 0 || (ratios[0].b === res.w && ratios[0].s === res.h)) return
+    setRes({
+      w: (ratios[0].dir?.p ? ratios[0].s : ratios[0].b) * 500,
+      h: (ratios[0].dir?.p ? ratios[0].b : ratios[0].s) * 500
+    })
+  }, [ratios])
 
   useEffect(() => {
     dispatch({ type: 'c-res', payload: res })

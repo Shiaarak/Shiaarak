@@ -45,9 +45,9 @@ export default function App() {
       <LogoContext.Provider value={logo}>
         <AppShell
           bg={'dark'}
-          aside={{ width: 300, breakpoint: 'xs', collapsed: { desktop: false, mobile: true } }}
-          header={{ height: 30, offset: true }}
           padding="md"
+          header={{ height: 30, offset: true }}
+          aside={{ width: 300, breakpoint: 'xs', collapsed: { desktop: false, mobile: true } }}
         >
           <AppShell.Header dir={lang.dir} pr={10} pl={10}>
             <Menus onLangChange={setLang} onLogoChange={handleFileImport} />
