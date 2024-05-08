@@ -52,11 +52,11 @@ export default function IconTab({ holderRef, res }: IconTabProps) {
     <Stack justify="flex-start" gap="xs">
       <Space h="xs" />
 
-      <Fieldset legend={translate('sel.icon.legend', [[1, ((aspect - padding * 2) / aspect).toFixed(2)]])}>
+      <Fieldset legend={translate('tab.icon.legend', [[1, ((aspect - padding * 2) / aspect).toFixed(2)]])}>
         {layers.length > 0 && (
           <>
             <Text {...textProps}>
-              {translate('sel.icon.pad')} ({padding})
+              {translate('tab.icon.pad')} ({padding})
             </Text>
             <Space h="xs" />
             <Slider value={padding} onChange={setPadding} min={0} max={maxPadding} label={null} />
@@ -64,7 +64,7 @@ export default function IconTab({ holderRef, res }: IconTabProps) {
         )}
       </Fieldset>
 
-      <Divider my="xs" label={`🔻 ${translate('sel.icon.i-l')} 🔻`} labelPosition="center" />
+      <Divider my="xs" label={`🔻 ${translate('tab.icon.i-l')} 🔻`} labelPosition="center" />
 
       {layers.length > 0 && (
         <>
@@ -173,7 +173,7 @@ function IconLayer({ i, el: canvas, res, padding, onClick }: IconLayerProps) {
   return (
     <Accordion.Item key={i} value={i.toString()}>
       <Accordion.Control onClick={() => onClick(i.toString())}>
-        {translate('sel.icon.layer')} {i}
+        {translate('tab.icon.layer')} {i}
       </Accordion.Control>
       <Accordion.Panel>
         <ColorSel choices={colors} onChange={setColor} />

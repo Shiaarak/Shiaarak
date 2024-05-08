@@ -20,6 +20,16 @@
     "i": "Icon",
     "t": "Text"
   },
+  "tab": {
+    "icon": {
+      "legend": "Scale = $1%",
+      "layer": "Layer",
+      "pad": "Padding",
+      "i-l": "Icon Layers",
+      "c-all": "Close All",
+      "o-all": "Open All"
+    }
+  },
   "sel": {
     "color": {
       "legend": "Color = ",
@@ -35,14 +45,6 @@
       "l": "Landscape",
       "p": "Portrait",
       "p-m": "Pixel Multiplier"
-    },
-    "icon": {
-      "legend": "Scale = $1%",
-      "layer": "Layer",
-      "pad": "Padding",
-      "i-l": "Icon Layers",
-      "c-all": "Close All",
-      "o-all": "Open All"
     }
   }
 }
