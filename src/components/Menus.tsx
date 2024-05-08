@@ -50,7 +50,10 @@ export default function Menus({ onLangChange, onLogoChange }: MenusProps) {
   function cancelChanges(key: string) {
     switch (key) {
       case 'lang': {
-        if (!langSelRef.current) return
+        if (!langSelRef.current) {
+          closeSettings()
+          return
+        }
         langSelRef.current.value = lang.name
 
         closeSettings()
@@ -58,7 +61,10 @@ export default function Menus({ onLangChange, onLogoChange }: MenusProps) {
       }
 
       case 'file': {
-        if (!tempLogo) return
+        if (!tempLogo) {
+          closeFile()
+          return
+        }
         setTempLogo(null)
 
         closeFile()
