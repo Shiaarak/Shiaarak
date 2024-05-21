@@ -1,11 +1,20 @@
-import { useContext, useEffect, useState } from 'react'
-import { Fieldset, Text, Space, Slider } from '@mantine/core'
-import { textProps, translate } from '../../settings'
-import { type Res, type LogoCanvas, LogoContext } from '../../logo'
+import { useEffect, useState } from 'react'
+import { Fieldset, Slider } from '@mantine/core'
+import { translate } from '../../settings'
 
 export interface PaddingSelProps {
-  /** Used to calculate the padding */
-  res: Res
+  /** half size of container's smallest side */
+  halfSize: number
+
+  /**
+   * @defaultValue 0
+   */
+  min?: number
+
+  /**
+   * @defaultValue 1
+   */
+  max?: number
 
   /**
    * To be called when data changes
@@ -14,27 +23,28 @@ export interface PaddingSelProps {
   onChange: (value: number) => void
 }
 
-export default function PaddingSel({ res: { w, h } }: PaddingSelProps) {
-  const { canvas } = useContext(LogoContext) || { canvas: { padding: 0, colors: [], ratios: [] } }
-  const { padding: p }: LogoCanvas = canvas
-
-  const aspect = Math.min(w, h)
-  const maxPadding = aspect * 0.5
-
-  const [padding, setPadding] = useState<number>(maxPadding * p)
+export default function PaddingSel({ halfSize: size, min = 0, max = 100, onChange }: PaddingSelProps) {
+  const [p, setPadding] = useState<number>(min)
 
   useEffect(() => {
-    if (p === padding / maxPadding) return
-    setPadding(maxPadding * p)
-  }, [w, h, p])
+    if (p < min) setPadding(min)
+  }, [min])
+
+  useEffect(() => {
+    if (p > max) setPadding(max)
+  }, [max])
+
+  useEffect(() => onChange(p), [p, onChange])
 
   return (
-    <Fieldset legend={translate('sel.padding.legend', [((aspect - padding * 2) / aspect).toFixed(2)])}>
-      <Text {...textProps}>
-        {translate('sel.padding.pad')} ({padding})
-      </Text>
-      <Space h="xs" />
-      <Slider value={padding} onChange={setPadding} min={0} max={maxPadding} label={null} />
+    <Fieldset legend={translate('sel.padding.legend', [(p / size) * 100])}>
+      <Slider
+        value={(p / size) * 100}
+        onChange={(val) => setPadding((val / 100) * size)}
+        min={min}
+        max={max}
+        label={null}
+      />
     </Fieldset>
   )
 }

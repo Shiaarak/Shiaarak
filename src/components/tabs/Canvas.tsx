@@ -15,7 +15,7 @@ export interface CanvasTabProps {
   dispatch: React.Dispatch<PreviewReducerAction>
 }
 
-export default function CanvasTab({ res, dispatch }: CanvasTabProps) {
+export default function CanvasTab({ res: { w, h }, dispatch }: CanvasTabProps) {
   const {
     canvas: { colors, ratios }
   } = useContext(LogoContext) || { canvas: { colors: [], ratios: [] } }
@@ -28,7 +28,7 @@ export default function CanvasTab({ res, dispatch }: CanvasTabProps) {
 
       <ColorSel choices={colors || []} onChange={(val) => dispatch({ type: 'c-color', payload: val })} />
 
-      <PaddingSel res={res} onChange={(val) => dispatch({ type: 'c-padding', payload: val })} />
+      <PaddingSel halfSize={Math.min(w, h) * 0.5} onChange={(val) => dispatch({ type: 'c-padding', payload: val })} />
     </Stack>
   )
 }

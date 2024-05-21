@@ -44,8 +44,7 @@
       "p-m": "Pixel Multiplier"
     },
     "padding": {
-      "legend": "Scale = $1%",
-      "pad": "Padding"
+      "legend": "Padding = $1%"
     }
   }
 }
