@@ -1,22 +1,18 @@
 import type { PreviewReducerAction } from '../Preview'
 
 import { useContext, useEffect, useState } from 'react'
-import { Stack, Accordion, Space, ScrollArea, Divider, Button } from '@mantine/core'
+import { Stack, Accordion, Space, ScrollArea, Button } from '@mantine/core'
 import { translate } from '../../settings'
 import ColorSel from '../selectors/Color'
-import PaddingSel from '../selectors/Padding'
-import { LogoContext, type Res, type LogoIcon } from '../../logo'
+import { LogoContext, type LogoIcon } from '../../logo'
 
 export interface IconTabProps {
   /** Used to update the IconTab changes */
   dispatch: React.Dispatch<PreviewReducerAction>
-
-  /** Used to calculate the padding */
-  res: Res
 }
 
-export default function IconTab({ res, dispatch }: IconTabProps) {
-  const { icon } = useContext(LogoContext) || { icon: { padding: 0.1, layers: [] } }
+export default function IconTab({ dispatch }: IconTabProps) {
+  const { icon } = useContext(LogoContext) || { icon: { layers: [] } }
   const { layers }: LogoIcon = icon
 
   const [openItems, setOpenItems] = useState<string[]>(layers.map((_, i) => i.toString()))
@@ -44,9 +40,6 @@ export default function IconTab({ res, dispatch }: IconTabProps) {
   return (
     <Stack justify="flex-start" gap="xs">
       <Space h="xs" />
-      <PaddingSel res={res} onChange={(val) => dispatch({ type: 'i-padding', payload: val })} />
-
-      <Divider my="xs" label={`🔻 ${translate('tab.icon.i-l')} 🔻`} labelPosition="center" />
 
       {layers.length > 0 && (
         <>

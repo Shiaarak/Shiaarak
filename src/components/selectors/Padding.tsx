@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState } from 'react'
 import { Fieldset, Text, Space, Slider } from '@mantine/core'
 import { textProps, translate } from '../../settings'
-import { type Res, type LogoIcon, LogoContext } from '../../logo'
+import { type Res, type LogoCanvas, LogoContext } from '../../logo'
 
 export interface PaddingSelProps {
   /** Used to calculate the padding */
@@ -14,9 +14,9 @@ export interface PaddingSelProps {
   onChange: (value: number) => void
 }
 
-export default function ColorSel({ res: { w, h } }: PaddingSelProps) {
-  const { icon } = useContext(LogoContext) || { icon: { padding: 0.1, layers: [] } }
-  const { padding: p, layers }: LogoIcon = icon
+export default function PaddingSel({ res: { w, h } }: PaddingSelProps) {
+  const { canvas } = useContext(LogoContext) || { canvas: { padding: 0, colors: [], ratios: [] } }
+  const { padding: p }: LogoCanvas = canvas
 
   const aspect = Math.min(w, h)
   const maxPadding = aspect * 0.5
@@ -30,15 +30,11 @@ export default function ColorSel({ res: { w, h } }: PaddingSelProps) {
 
   return (
     <Fieldset legend={translate('sel.padding.legend', [((aspect - padding * 2) / aspect).toFixed(2)])}>
-      {layers.length > 0 && (
-        <>
-          <Text {...textProps}>
-            {translate('sel.padding.pad')} ({padding})
-          </Text>
-          <Space h="xs" />
-          <Slider value={padding} onChange={setPadding} min={0} max={maxPadding} label={null} />
-        </>
-      )}
+      <Text {...textProps}>
+        {translate('sel.padding.pad')} ({padding})
+      </Text>
+      <Space h="xs" />
+      <Slider value={padding} onChange={setPadding} min={0} max={maxPadding} label={null} />
     </Fieldset>
   )
 }

@@ -13,8 +13,7 @@ export type LogoCanvas = {
 
   /** */
   ratios: AspectRatio[]
-}
-export type LogoIcon = {
+
   /**
    * Padding around the icon in percentage
    *
@@ -23,7 +22,8 @@ export type LogoIcon = {
    * @defaultValue 0.1
    */
   padding: number
-
+}
+export type LogoIcon = {
   /** */
   layers: LogoIconLayer[]
 }

@@ -17,8 +17,8 @@ export default function App() {
   const [preview, previewDispatch]: [PreviewWithAction, React.Dispatch<PreviewReducerAction>] = useReducer(
     previewReducer,
     {
-      canvas: { res: { w: 500, h: 500 } },
-      icon: { padding: 0, layers: [] }
+      canvas: { res: { w: 500, h: 500 }, padding: 0 },
+      icon: { layers: [] }
     }
   )
   const [lang, setLang] = useLocalStorage<Lang>({
@@ -71,10 +71,10 @@ export default function App() {
                 <Tabs.Tab value="t">{translate('tabs.t')}</Tabs.Tab>
               </Tabs.List>
               <Tabs.Panel value="c">
-                <CanvasTab dispatch={previewDispatch} />
+                <CanvasTab res={preview.canvas.res} dispatch={previewDispatch} />
               </Tabs.Panel>
               <Tabs.Panel value="i">
-                <IconTab res={preview.canvas.res} dispatch={previewDispatch} />
+                <IconTab dispatch={previewDispatch} />
               </Tabs.Panel>
               {/* <Tabs.Panel value="t">{<TextTab />}</Tabs.Panel> */}
             </Tabs>

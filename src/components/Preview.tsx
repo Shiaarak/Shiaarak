@@ -15,12 +15,11 @@ export type PreviewReducerCanvasAction =
       type: 'c-color'
       payload: Color | null
     }
-export type PreviewReducerIconAction =
   | {
-      type: 'i-padding'
+      type: 'c-padding'
       payload: number
     }
-  | PreviewReducerLayerAction
+export type PreviewReducerIconAction = PreviewReducerLayerAction
 export type PreviewReducerLayerAction =
   | {
       type: 'l-img'
@@ -48,9 +47,9 @@ export function reducer(preview: PreviewWithAction, action: PreviewReducerAction
       if (preview.canvas.color === payload) return preview
       return { ...preview, canvas: { ...preview.canvas, color: payload }, ...action }
     }
-    case 'i-padding': {
-      if (preview.icon.padding === payload) return preview
-      return { ...preview, icon: { ...preview.icon, padding: payload }, ...action }
+    case 'c-padding': {
+      if (preview.canvas.padding === payload) return preview
+      return { ...preview, canvas: { ...preview.canvas, padding: payload }, ...action }
     }
     case 'l-img': {
       const { i, img } = payload
@@ -94,18 +93,23 @@ export default function Preview({ preview: { canvas, icon, type: actionType, pay
 
   useEffect(() => {
     if (!bgRef.current) return
+
+    if (actionType === 'c-padding') {
+      callDrawIcon()
+      return
+    }
+
     drawCanvas({ ...canvas, el: bgRef.current })
 
     if (actionType === 'c-res') callDrawIcon()
   }, [canvas])
 
   useEffect(() => {
-    if (actionType === 'i-padding') callDrawIcon()
-    else if (actionType === 'l-img' || actionType === 'l-color')
+    if (actionType === 'l-img' || actionType === 'l-color')
       drawLayer({
         el: iconLayersHolderRef.current?.children[actionPayload.i] as HTMLCanvasElement,
         res: canvas.res,
-        padding: icon.padding,
+        padding: canvas.padding,
         ...icon.layers[actionPayload.i]
       })
   }, [icon])
@@ -143,9 +147,9 @@ export interface Preview {
 export interface CanvasPreview {
   res: Res
   color?: Color | null
+  padding: number
 }
 export interface IconPreview {
-  padding: number
   layers: IconLayerPreview[]
 }
 export interface IconLayerPreview {
@@ -185,7 +189,12 @@ function drawCanvas({ el: canvas, res: { w, h }, color }: CanvasPreview & { el: 
   }
 }
 
-function drawIcon({ holder, res, padding, layers }: IconPreview & { holder: HTMLDivElement; res: Res }) {
+function drawIcon({
+  holder,
+  res,
+  padding,
+  layers
+}: IconPreview & { holder: HTMLDivElement; res: Res; padding: number }) {
   for (let i = 0; i < layers.length; i++) {
     const el = holder.children[i] as HTMLCanvasElement
     drawLayer({ el, res, padding, ...layers[i] })
