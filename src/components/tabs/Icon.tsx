@@ -1,10 +1,11 @@
 import type { PreviewReducerAction } from '../Preview'
 
 import { useContext, useEffect, useState } from 'react'
-import { Stack, Accordion, Space, ScrollArea, Divider, Slider, Text, Fieldset, Button } from '@mantine/core'
-import { textProps, translate } from '../../settings'
+import { Stack, Accordion, Space, ScrollArea, Divider, Button } from '@mantine/core'
+import { translate } from '../../settings'
 import ColorSel from '../selectors/Color'
-import { LogoContext, type LogoIcon, type Res } from '../../logo'
+import PaddingSel from '../selectors/Padding'
+import { LogoContext, type Res, type LogoIcon } from '../../logo'
 
 export interface IconTabProps {
   /** Used to update the IconTab changes */
@@ -14,24 +15,11 @@ export interface IconTabProps {
   res: Res
 }
 
-export default function IconTab({ res: { w, h }, dispatch }: IconTabProps) {
+export default function IconTab({ res, dispatch }: IconTabProps) {
   const { icon } = useContext(LogoContext) || { icon: { padding: 0.1, layers: [] } }
-  const { padding: p, layers }: LogoIcon = icon
+  const { layers }: LogoIcon = icon
 
-  const aspect = Math.min(w, h)
-  const maxPadding = aspect * 0.5
-
-  const [padding, setPadding] = useState<number>(maxPadding * p)
   const [openItems, setOpenItems] = useState<string[]>(layers.map((_, i) => i.toString()))
-
-  useEffect(() => {
-    if (p === padding / maxPadding) return
-    setPadding(maxPadding * p)
-  }, [w, h, p])
-
-  useEffect(() => {
-    dispatch({ type: 'i-padding', payload: padding })
-  }, [padding, dispatch])
 
   function controlItems(itemI?: string) {
     if (itemI) {
@@ -56,18 +44,7 @@ export default function IconTab({ res: { w, h }, dispatch }: IconTabProps) {
   return (
     <Stack justify="flex-start" gap="xs">
       <Space h="xs" />
-
-      <Fieldset legend={translate('tab.icon.legend', [((aspect - padding * 2) / aspect).toFixed(2)])}>
-        {layers.length > 0 && (
-          <>
-            <Text {...textProps}>
-              {translate('tab.icon.pad')} ({padding})
-            </Text>
-            <Space h="xs" />
-            <Slider value={padding} onChange={setPadding} min={0} max={maxPadding} label={null} />
-          </>
-        )}
-      </Fieldset>
+      <PaddingSel res={res} onChange={(val) => dispatch({ type: 'i-padding', payload: val })} />
 
       <Divider my="xs" label={`🔻 ${translate('tab.icon.i-l')} 🔻`} labelPosition="center" />
 

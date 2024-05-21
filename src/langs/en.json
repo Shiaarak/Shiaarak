@@ -22,9 +22,7 @@
   },
   "tab": {
     "icon": {
-      "legend": "Scale = $1%",
       "layer": "Layer",
-      "pad": "Padding",
       "i-l": "Icon Layers",
       "c-all": "Close All",
       "o-all": "Open All"
@@ -45,6 +43,10 @@
       "l": "Landscape",
       "p": "Portrait",
       "p-m": "Pixel Multiplier"
+    },
+    "padding": {
+      "legend": "Scale = $1%",
+      "pad": "Padding"
     }
   }
 }
