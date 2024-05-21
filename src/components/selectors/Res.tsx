@@ -6,12 +6,6 @@ import { type Res, type AspectRatio, type AspectRatioDir } from '../../logo'
 
 export interface ResSelProps {
   /**
-   * The current resolution value
-   * @defaultValue [{ w: 1000, h: 1000 }]
-   */
-  value: Res
-
-  /**
    * The color options to choose from
    * @defaultValue ['1x1']
    */
@@ -24,7 +18,7 @@ export interface ResSelProps {
   onChange: (value: Res) => void
 }
 
-export default function ResSel({ value, choices, onChange }: ResSelProps) {
+export default function ResSel({ choices, onChange }: ResSelProps) {
   const [ratio, setRatio] = useState<AspectRatio>(choices[0] || { b: 1, s: 1 })
   const [dir, setDir] = useState<AspectRatioDir>(ratio.dir?.p ? 'p' : 'l')
   const [mul, setMul] = useState<number>(500)
@@ -56,7 +50,7 @@ export default function ResSel({ value, choices, onChange }: ResSelProps) {
   }
 
   return (
-    <Fieldset legend={translate('sel.res.legend', [value.w, value.h])}>
+    <Fieldset legend={translate('sel.res.legend', [ratio.b, ratio.s])}>
       {choices.length > 0 && (
         <>
           <Text {...textProps}>{translate('sel.res.ratio')}</Text>

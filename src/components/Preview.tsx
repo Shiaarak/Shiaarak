@@ -41,21 +41,28 @@ export function reducer(preview: PreviewWithAction, action: PreviewReducerAction
   const { type, payload } = action
   switch (type) {
     case 'c-res': {
+      if (preview.canvas.res.w === payload.w && preview.canvas.res.h === payload.h) return preview
       return { ...preview, canvas: { ...preview.canvas, res: payload }, ...action }
     }
     case 'c-color': {
+      if (preview.canvas.color === payload) return preview
       return { ...preview, canvas: { ...preview.canvas, color: payload }, ...action }
     }
     case 'i-padding': {
+      if (preview.icon.padding === payload) return preview
       return { ...preview, icon: { ...preview.icon, padding: payload }, ...action }
     }
     case 'l-img': {
       const { i, img } = payload
       const len = preview.icon.layers.length
 
-      if (i < len) preview.icon.layers[i].img = img
-      else if (i === len) preview.icon.layers.push({ img })
-      else throw new Error(`Invalid layer index: ${i}`)
+      if (i > len) throw new Error(`Invalid layer index: ${i}`)
+
+      if (i === len) preview.icon.layers.push({ img })
+      else {
+        if (img === preview.icon.layers[i].img) return preview
+        preview.icon.layers[i].img = img
+      }
 
       return { ...preview, icon: { ...preview.icon, layers: [...preview.icon.layers] }, ...action }
     }
@@ -63,8 +70,11 @@ export function reducer(preview: PreviewWithAction, action: PreviewReducerAction
       const { i, color } = payload
       const len = preview.icon.layers.length
 
-      if (i < len) preview.icon.layers[i].color = color
-      else throw new Error(`Invalid layer index: ${i}`)
+      // @ts-ignore
+      if (i >= len) preview.icon.layers.push({ color })
+      if (preview.icon.layers[i].color === color) return preview
+
+      preview.icon.layers[i].color = color
 
       return { ...preview, icon: { ...preview.icon, layers: [...preview.icon.layers] }, ...action }
     }

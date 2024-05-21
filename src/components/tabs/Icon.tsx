@@ -4,7 +4,7 @@ import { useContext, useEffect, useState } from 'react'
 import { Stack, Accordion, Space, ScrollArea, Divider, Slider, Text, Fieldset, Button } from '@mantine/core'
 import { textProps, translate } from '../../settings'
 import ColorSel from '../selectors/Color'
-import { LogoContext, type LogoIcon, type Color, type Res } from '../../logo'
+import { LogoContext, type LogoIcon, type Res } from '../../logo'
 
 export interface IconTabProps {
   /** Used to update the IconTab changes */
@@ -107,20 +107,10 @@ function IconLayer({ i, dispatch, onClick }: IconLayerProps) {
   } = useContext(LogoContext) || { icon: { layers: [] } }
   const { colors, img } = layers[i]
 
-  const [color, setColor] = useState<Color | null>(colors.length > 0 ? ((colors[0] + 'ff') as Color) : null)
-
-  useEffect(() => {
-    if (colors.length === 0 || colors[0] === color?.substring(0, 7)) return
-    setColor((colors[0] + 'ff') as Color)
-  }, [colors])
-
   useEffect(() => {
     if (typeof img === 'string') throw new Error('img must not be a string')
     dispatch({ type: 'l-img', payload: { i, img } })
   }, [img, dispatch])
-  useEffect(() => {
-    dispatch({ type: 'l-color', payload: { i, color: color !== null ? color : '#00000000' } })
-  }, [color, dispatch])
 
   return (
     <Accordion.Item key={i} value={i.toString()}>
@@ -128,7 +118,10 @@ function IconLayer({ i, dispatch, onClick }: IconLayerProps) {
         {translate('tab.icon.layer')} {i}
       </Accordion.Control>
       <Accordion.Panel>
-        <ColorSel choices={colors} onChange={setColor} />
+        <ColorSel
+          choices={colors}
+          onChange={(val) => dispatch({ type: 'l-color', payload: { i, color: val ?? '#00000000' } })}
+        />
       </Accordion.Panel>
     </Accordion.Item>
   )
